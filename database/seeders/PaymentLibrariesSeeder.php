@@ -25,13 +25,13 @@ class PaymentLibrariesSeeder extends Seeder
     {
         Model::unguard();
 
-        // Generate a random callback secret for Blockonomics users
-        $callbackSecret = Str::random(32);
+        /* // Generate a random callback secret for Blockonomics users
+        $callbackSecret = Str::random(32); */
 
         $gateways = [
             ['id' => 1, 'name' => 'Authorize.Net', 'provider' => 'Authorize', 'sort_order' => 5, 'key' => '3b6621f970ab18887c4f6dca78d3f8bb', 'fields' => '{"apiLoginId":"","transactionKey":"","testMode":false,"developerMode":false,"liveEndpoint":"https:\/\/api2.authorize.net\/xml\/v1\/request.api","developerEndpoint":"https:\/\/apitest.authorize.net\/xml\/v1\/request.api"}
 '],
-            ['id' => 2, 'name' => 'CardSave', 'provider' => 'CardSave', 'key' => '46c5c1fed2c43acf4f379bae9c8b9f76', 'fields' => '{"merchantId":"","password":""}
+            /* ['id' => 2, 'name' => 'CardSave', 'provider' => 'CardSave', 'key' => '46c5c1fed2c43acf4f379bae9c8b9f76', 'fields' => '{"merchantId":"","password":""}
 '],
             ['id' => 3, 'name' => 'Eway Rapid', 'provider' => 'Eway', 'is_offsite' => true, 'key' => '944c20175bbe6b9972c05bcfe294c2c7', 'fields' => '{"apiKey":"","password":"","publicApiKey":"","testMode":false}'],
             ['id' => 4, 'name' => 'FirstData Connect', 'provider' => 'FirstData_Connect', 'key' => '4e0ed0d34552e6cb433506d1ac03a418', 'fields' => '{"storeId":"","sharedSecret":"","testMode":false}'],
@@ -94,7 +94,7 @@ class PaymentLibrariesSeeder extends Seeder
             ['id' => 62, 'name' => 'BTCPay', 'provider' => 'BTCPay', 'key' => 'vpyfbmdrkqcicpkjqdusgjfluebftuva', 'fields' => '{"btcpayUrl":"", "apiKey":"", "storeId":"", "webhookSecret":""}'],
             ['id' => 63, 'name' => 'Rotessa', 'is_offsite' => false, 'sort_order' => 22, 'provider' => 'Rotessa', 'key' => '91be24c7b792230bced33e930ac61676', 'fields' => '{"apiKey":"", "testMode":false}'],
             ['id' => 64, 'name' => 'CBA PowerBoard', 'is_offsite' => false, 'sort_order' => 26, 'provider' => 'CBAPowerBoard', 'key' => 'b67581d804dbad1743b61c57285142ad', 'fields' => '{"publicKey":"", "secretKey":"", "testMode":false, "gatewayId":"", "amex":false, "ausbc":false, "discover":false, "japcb":false, "laser":false, "mastercard":true, "solo":false, "visa":true, "visa_white":false}'],
-            ['id' => 65, 'name' => 'Blockonomics', 'is_offsite' => false, 'sort_order' => 27, 'provider' => 'Blockonomics', 'key' => 'wbhf02us6owgo7p4nfjd0ymssdshks4d', 'fields' => '{"apiKey":"", "callbackSecret":"' . $callbackSecret . '"}'],
+            ['id' => 65, 'name' => 'Blockonomics', 'is_offsite' => false, 'sort_order' => 27, 'provider' => 'Blockonomics', 'key' => 'wbhf02us6owgo7p4nfjd0ymssdshks4d', 'fields' => '{"apiKey":"", "callbackSecret":"' . $callbackSecret . '"}'], */
         ];
 
         foreach ($gateways as $gateway) {

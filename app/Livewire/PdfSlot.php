@@ -187,9 +187,23 @@ class PdfSlot extends Component
 
     private function convertVariables($string): string
     {
+        // Safety check: if input string is empty, return empty string
+        if (empty(trim($string))) {
+            return '';
+        }
+
+        // Safety check: ensure html_variables arrays exist
+        if (!isset($this->html_variables['labels']) || !isset($this->html_variables['values'])) {
+            return $string;
+        }
 
         $html = strtr($string, $this->html_variables['labels']);
         $html = strtr($html, $this->html_variables['values']);
+
+        // Safety check: if result is empty after variable replacement, return original string
+        if (empty(trim($html))) {
+            return $string;
+        }
 
         return $html;
 
@@ -199,6 +213,11 @@ class PdfSlot extends Component
     {
 
         $company_address = "";
+
+        // Safety check: ensure company_address array exists and is not empty
+        if (!isset($this->settings->pdf_variables->company_address) || empty($this->settings->pdf_variables->company_address)) {
+            return '';
+        }
 
         foreach ($this->settings->pdf_variables->company_address as $variable) {
             $company_address .= "<p>{$variable}</p>";
@@ -211,6 +230,11 @@ class PdfSlot extends Component
     private function getCompanyDetails()
     {
         $company_details = "";
+
+        // Safety check: ensure company_details array exists and is not empty
+        if (!isset($this->settings->pdf_variables->company_details) || empty($this->settings->pdf_variables->company_details)) {
+            return '';
+        }
 
         foreach ($this->settings->pdf_variables->company_details as $variable) {
             $company_details .= "<p>{$variable}</p>";
@@ -225,21 +249,25 @@ class PdfSlot extends Component
         $entity_details = "";
 
         if ($this->entity_type == 'invoice' || $this->entity_type == 'recurring_invoice') {
+            // Safety check: ensure invoice_details array exists and is not empty
+            if (!isset($this->settings->pdf_variables->invoice_details) || empty($this->settings->pdf_variables->invoice_details)) {
+                return '';
+            }
             foreach ($this->settings->pdf_variables->invoice_details as $variable) {
-                $entity_details .= "<div class='flex px-5 block'><p class= w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
+                $entity_details .= "<div class='flex px-5 block'><p class='w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
             }
 
         } elseif ($this->entity_type == 'quote') {
             foreach ($this->settings->pdf_variables->quote_details ?? [] as $variable) {
-                $entity_details .= "<div class='flex px-5 block'><p class= w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
+                $entity_details .= "<div class='flex px-5 block'><p class='w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
             }
         } elseif ($this->entity_type == 'credit') {
             foreach ($this->settings->pdf_variables->credit_details ?? [] as $variable) {
-                $entity_details .= "<div class='flex px-5 block'><p class= w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
+                $entity_details .= "<div class='flex px-5 block'><p class='w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
             }
         } elseif ($this->entity_type == 'purchase_order') {
             foreach ($this->settings->pdf_variables->purchase_order_details ?? [] as $variable) {
-                $entity_details .= "<div class='flex px-5 block'><p class= w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
+                $entity_details .= "<div class='flex px-5 block'><p class='w-36 block'>{$variable}_label</p><p class='ml-5 w-36 block entity-field'>{$variable}</p></div>";
             }
         }
 
@@ -268,10 +296,18 @@ class PdfSlot extends Component
         $user_details = "";
 
         if ($this->entity_type == 'purchase_order') {
+            // Safety check: ensure vendor_details array exists and has more than 1 element
+            if (!isset($this->settings->pdf_variables->vendor_details) || count($this->settings->pdf_variables->vendor_details) <= 1) {
+                return '';
+            }
             foreach (array_slice($this->settings->pdf_variables->vendor_details, 1) as $variable) {
                 $user_details .= "<p>{$variable}</p>";
             }
         } else {
+            // Safety check: ensure client_details array exists and has more than 1 element
+            if (!isset($this->settings->pdf_variables->client_details) || count($this->settings->pdf_variables->client_details) <= 1) {
+                return '';
+            }
             foreach (array_slice($this->settings->pdf_variables->client_details, 1) as $variable) {
                 $user_details .= "<p>{$variable}</p>";
             }

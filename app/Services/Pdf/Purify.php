@@ -241,6 +241,11 @@ class Purify
             return str_replace('%24', '$', $html);
         }
 
+        // Safety check: if HTML is empty or only whitespace, return early
+        if (empty(trim($html))) {
+            return '';
+        }
+
         $html = str_replace('%24', '$', $html);
         libxml_use_internal_errors(true);
         

@@ -12,7 +12,7 @@
         </path>
     </svg>
 
-    @unless($isLoading)
+    @unless($isLoading && !(isset($company->settings->lendrose_bnpl_url) && $company->settings->lendrose_bnpl_url))
         <div class="my-3 flex flex-col space-y-3">
             @foreach($methods as $index => $method)
                 <button wire:loading.remove
@@ -21,6 +21,15 @@
                     <span>{{ $method['label'] }}</span>
                 </button>
             @endforeach
+            
+            @if(isset($company->settings->lendrose_bnpl_url) && $company->settings->lendrose_bnpl_url)
+                <a href="{{ $company->settings->lendrose_bnpl_url }}" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300 text-center justify-center bg-blue-50 hover:bg-blue-100 border-blue-200">
+                    <span class="text-blue-700 font-medium">Lendrose Buy Now Pay Later</span>
+                </a>
+            @endif
         </div>
     @endunless 
 
@@ -30,9 +39,9 @@
             isLoading = false;
         });
 
-        Livewire.on('singlePaymentMethodFound', (event) => {
+        /* Livewire.on('singlePaymentMethodFound', (event) => {
             $wire.dispatch('payment-method-selected', { company_gateway_id: event.company_gateway_id, gateway_type_id: event.gateway_type_id, amount: event.amount })
-        });
+        }); */
 
         const buttons = document.querySelectorAll('.payment-method');
 

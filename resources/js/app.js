@@ -10,9 +10,10 @@
 
 import axios from 'axios';
 import cardValidator from 'card-validator';
-import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
+// Temporarily comment out Livewire import until Composer dependencies are installed
+// import { Livewire, Alpine } from '../../vendor/livewire/livewire/dist/livewire.esm';
 
-Livewire.start()
+// Livewire.start()
 window.axios = axios;
 window.valid = cardValidator;
 

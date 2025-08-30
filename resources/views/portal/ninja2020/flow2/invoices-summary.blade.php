@@ -14,7 +14,7 @@
             </div>
         </div>
 
-        <div class="p-6 text-sm">
+        <div class="px-6 pb-6 pt-6 text-sm">
             @foreach($invoices as $invoice)
             <div class="mb-4 w-full items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all hover:bg-gray-100">
                 <dl class="grid gap-1">

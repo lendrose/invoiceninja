@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use App\Utils\Number;
+use Illuminate\Support\Facades\App;
+use Elastic\ScoutDriverPlus\Searchable;
 use App\Services\Project\ProjectService;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Laracasts\Presenter\PresentableTrait;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Project.
@@ -31,6 +34,7 @@ use Laracasts\Presenter\PresentableTrait;
  * @property bool $is_deleted
  * @property string|null $number
  * @property string $color
+ * @property int|null $current_hours
  * @property-read \App\Models\Client|null $client
  * @property-read \App\Models\Company $company
  * @property-read int|null $documents_count
@@ -53,6 +57,9 @@ use Laracasts\Presenter\PresentableTrait;
  * @method static \Illuminate\Database\Eloquent\Builder|Project withoutTrashed()
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Document> $documents
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task> $tasks
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Expense> $expenses
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Invoice> $invoices
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Quote> $quotes
  * @mixin \Eloquent
  */
 class Project extends BaseModel
@@ -60,6 +67,7 @@ class Project extends BaseModel
     use SoftDeletes;
     use PresentableTrait;
     use Filterable;
+    use Searchable;
 
     protected $fillable = [
         'name',
@@ -82,12 +90,42 @@ class Project extends BaseModel
         'documents',
     ];
 
+    protected $touches = [];
+
     public function getEntityType()
     {
         return self::class;
     }
 
-    protected $touches = [];
+    public function toSearchableArray()
+    {
+        $locale = $this->company->locale();
+        App::setLocale($locale);
+
+        return [
+            'id' => (string)$this->company->db.":".$this->id,
+            'name' => ctrans('texts.project') . " " . $this->number . ' | ' . $this->name .  " | " . $this->client->present()->name(),
+            'hashed_id' => $this->hashed_id,
+            'number' => $this->number,
+            'is_deleted' => $this->is_deleted,
+            'task_rate' => (float) $this->task_rate,
+            'budgeted_hours' => (float) $this->budgeted_hours,
+            'due_date' => $this->due_date,
+            'custom_value1' => (string)$this->custom_value1,
+            'custom_value2' => (string)$this->custom_value2,
+            'custom_value3' => (string)$this->custom_value3,
+            'custom_value4' => (string)$this->custom_value4,
+            'company_key' => $this->company->company_key,
+            'private_notes' => (string) $this->private_notes ?: '',
+            'public_notes' => (string) $this->public_notes ?: '',
+            'current_hours' => (int) $this->current_hours ?: 0,
+        ];
+    }
+    
+    public function getScoutKey()
+    {
+        return (string)$this->company->db.":".$this->id;
+    }
 
     public function company(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
@@ -144,11 +182,11 @@ class Project extends BaseModel
         return $this->hasMany(Quote::class);
     }
 
-     /**
-     * Service entry points.
-     *
-     * @return ProjectService
-     */
+    /**
+    * Service entry points.
+    *
+    * @return ProjectService
+    */
     public function service(): ProjectService
     {
         return new ProjectService($this);

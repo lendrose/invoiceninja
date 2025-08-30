@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -12,7 +13,7 @@
 namespace App\Models;
 
 use App\Utils\Number;
-use Laravel\Scout\Searchable;
+use Elastic\ScoutDriverPlus\Searchable;
 use Illuminate\Support\Carbon;
 use App\Utils\Traits\MakesHash;
 use App\Helpers\Invoice\InvoiceSum;
@@ -35,6 +36,7 @@ use App\Models\Presenters\RecurringInvoicePresenter;
  * @property int|null $project_id
  * @property int|null $vendor_id
  * @property int $status_id
+ * @property int|null $location_id
  * @property string|null $number
  * @property float $discount
  * @property bool $is_amount_discount
@@ -108,6 +110,7 @@ use App\Models\Presenters\RecurringInvoicePresenter;
  * @property-read \App\Models\Subscription|null $subscription
  * @property-read \App\Models\User $user
  * @property-read \App\Models\Vendor|null $vendor
+ * @property-read \App\Models\Location|null $location
  * @method static \Illuminate\Database\Eloquent\Builder|BaseModel exclude($columns)
  * @method static \Database\Factories\RecurringInvoiceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|RecurringInvoice filter(\App\Filters\QueryFilters $filters)
@@ -134,7 +137,7 @@ class RecurringInvoice extends BaseModel
     use HasRecurrence;
     use PresentableTrait;
     use Searchable;
-    
+
     protected $presenter = RecurringInvoicePresenter::class;
 
     /**
@@ -273,7 +276,7 @@ class RecurringInvoice extends BaseModel
         App::setLocale($locale);
 
         return [
-            'id' => $this->id,
+            'id' => $this->company->db.":".$this->id,
             'name' => ctrans('texts.recurring_invoice') . " " . $this->number . " | " . $this->client->present()->name() .  ' | ' . Number::formatMoney($this->amount, $this->company) . ' | ' . $this->translateDate($this->date, $this->company->date_format(), $locale),
             'hashed_id' => $this->hashed_id,
             'number' => $this->number,
@@ -293,9 +296,10 @@ class RecurringInvoice extends BaseModel
 
     public function getScoutKey()
     {
-        return $this->hashed_id;
+        return $this->company->db.":".$this->id;
     }
-    
+
+
     public function getEntityType()
     {
         return self::class;
@@ -734,7 +738,7 @@ class RecurringInvoice extends BaseModel
             // if ($this->client->timezone_offset() < 0) {
             //     $next_send_date = $this->nextSendDateClient($next_send_date->addDay()->format('Y-m-d'));
             // } else {
-                $next_send_date = $this->nextDateByFrequencyNoOffset($next_send_date);
+            $next_send_date = $this->nextDateByFrequencyNoOffset($next_send_date);
             // }
         }
 

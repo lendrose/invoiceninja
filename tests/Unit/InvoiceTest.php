@@ -52,6 +52,22 @@ class InvoiceTest extends TestCase
     }
 
 
+    public function testBulkInvoiceValidationRequestFailsWithMissingIds()
+    {
+        $data = [
+            'action' => 'archive',
+        ];
+
+
+        $response = $this->withHeaders([
+            'X-API-SECRET' => config('ninja.api_secret'),
+            'X-API-TOKEN' => $this->token,
+        ])->postJson('/api/v1/invoices/bulk', $data);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('ids');
+
+    }
     public function testInvoiceItemRoundingWithDiscountIsPercent()
     {
 

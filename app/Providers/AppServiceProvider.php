@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -77,15 +78,14 @@ class AppServiceProvider extends ServiceProvider
 
         Livewire::setUpdateRoute(function ($handle) {
             return Route::post('/livewire/update', $handle)
-                ->middleware('client');
+                ->middleware(['client','throttle:1000,1']);
         });
 
         /* Ensure we don't have stale state in jobs */
         Queue::before(function (JobProcessing $event) {
-            App::forgetInstance('truthsource');
+            App::forgetInstance(TruthSource::class);
         });
 
-        /* Always init a new instance everytime the container boots */
         app()->instance(TruthSource::class, new TruthSource());
 
         /* Extension for custom mailers */
@@ -154,5 +154,6 @@ class AppServiceProvider extends ServiceProvider
 
     public function register(): void
     {
+        
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html data-report-errors="{{ $report_errors }}" data-rc="{{ $rc }}" data-user-agent="{{ $user_agent }}" data-login="{{ $login }}" data-signup="{{ $signup }}" data-white-label="{{ $white_label }}">
+<html data-report-errors="{{ $report_errors }}" data-rc="{{ $rc }}" data-user-agent="{{ $user_agent }}" data-login="{{ $login }}" data-signup="{{ $signup }}" data-white-label="{{ $white_label }}" data-microsoft-client-id="{{ config('services.microsoft.client_id') }}">
 <head>
     <!-- Source: https://github.com/invoiceninja/invoiceninja -->
     <!-- Version: {{ config('ninja.app_version') }} -->

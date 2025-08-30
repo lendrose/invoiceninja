@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -18,7 +19,13 @@ use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class PaymentBalanceActivity implements ShouldQueue
 {
+
     use InteractsWithQueue;
+
+    public $tries = 1;
+    
+    public $delay = 5;
+    
     /**
      * Create the event listener.
      *
@@ -42,6 +49,15 @@ class PaymentBalanceActivity implements ShouldQueue
 
     public function middleware($event): array
     {
-        return [(new WithoutOverlapping($event->payment->client->id))];
+        return [(new WithoutOverlapping($event->payment->client->client_hash))->releaseAfter(60)->expireAfter(60)];
+    }
+
+    public function failed($exception)
+    {
+        if ($exception) {
+            nlog('PaymentBalanceActivity failed', ['exception' => $exception]);
+        }
+
+        // config(['queue.failed.driver' => null]);
     }
 }

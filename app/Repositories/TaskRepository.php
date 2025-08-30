@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -49,7 +50,7 @@ class TaskRepository extends BaseRepository
         if (!is_numeric($task->rate) && !isset($data['rate'])) {
             $data['rate'] = 0;
         }
-
+        
         $task->fill($data);
         $task->saveQuietly();
 
@@ -109,7 +110,9 @@ class TaskRepository extends BaseRepository
             $data['time_log'] = json_encode($timeLog);
         }
 
-        if (isset($data['time_log'])) {
+        if (isset($data['time_log']) && is_array($data['time_log'])) {
+            $time_log = $data['time_log'];
+        } elseif (isset($data['time_log'])) {
             $time_log = json_decode($data['time_log']);
         } elseif ($task->time_log) {
             $time_log = json_decode($task->time_log);

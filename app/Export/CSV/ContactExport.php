@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -134,18 +135,18 @@ class ContactExport extends BaseExport
 
             }
         }
-        // return $entity;
+        
         return $this->decorateAdvancedFields($contact->client, $entity);
     }
 
     private function decorateAdvancedFields(Client $client, array $entity): array
     {
         if (in_array('client.country_id', $this->input['report_keys'])) {
-            $entity['country'] = $client->country ? ctrans("texts.country_{$client->country->name}") : '';
+            $entity['client.country_id'] = $client->country ? ctrans("texts.country_{$client->country->name}") : '';
         }
 
         if (in_array('client.shipping_country_id', $this->input['report_keys'])) {
-            $entity['shipping_country'] = $client->shipping_country ? ctrans("texts.country_{$client->shipping_country->name}") : '';
+            $entity['client.shipping_country_id'] = $client->shipping_country ? ctrans("texts.country_{$client->shipping_country->name}") : '';
         }
 
         if (in_array('client.currency', $this->input['report_keys'])) {

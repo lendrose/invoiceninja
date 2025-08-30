@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -233,12 +234,16 @@ class User extends Authenticatable implements MustVerifyEmail
             return $truth->getCompanyToken();
         }
 
-        // if (request()->header('X-API-TOKEN')) {
         if (request()->header('X-API-TOKEN')) {
-            return CompanyToken::with(['cu'])->where('token', request()->header('X-API-TOKEN'))->first();
+            
+            $token = CompanyToken::with(['cu'])->where('token', request()->header('X-API-TOKEN'))->first();
+            if ($token) {
+                return $token;
+            }
+
         }
 
-        return $this->tokens()->first();
+        return $this->tokens()->with(['cu'])->first();
     }
 
     /**
@@ -730,7 +735,7 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function updateReferral(ReferralEarning $entity)
     {
-        
+
         $earnings = collect($this->referral_earnings);
 
         $updated_earnings = $earnings->map(function ($earning) use ($entity) {

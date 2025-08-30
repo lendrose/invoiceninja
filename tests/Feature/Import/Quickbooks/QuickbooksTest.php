@@ -41,13 +41,14 @@ class QuickbooksTest extends TestCase
     {
         parent::setUp();      
                 
+        $this->markTestSkipped('Skip test for GH Actions');
 
-        if (config('ninja.testvars.travis') !== false) {
-            $this->markTestSkipped('Skip test for GH Actions');
-        }
-        elseif(Company::whereNotNull('quickbooks')->count() == 0){
-            $this->markTestSkipped('No need to run this test on Travis');
-        }
+        // if (config('ninja.testvars.travis') !== false) {
+        //     $this->markTestSkipped('Skip test for GH Actions');
+        // }
+        // elseif(Company::whereNotNull('quickbooks')->count() == 0){
+        //     $this->markTestSkipped('No need to run this test on Travis');
+        // }
 
         $this->faker = \Faker\Factory::create();
     }

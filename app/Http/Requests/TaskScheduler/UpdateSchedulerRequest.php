@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -69,6 +70,15 @@ class UpdateSchedulerRequest extends Request
             'parameters.report_name' => ['bail','sometimes', 'string', 'required_if:template,email_report','in:vendor,purchase_order_item,purchase_order,ar_detailed,ar_summary,client_balance,tax_summary,profitloss,client_sales,user_sales,product_sales,activity,activities,client,clients,client_contact,client_contacts,credit,credits,document,documents,expense,expenses,invoice,invoices,invoice_item,invoice_items,quote,quotes,quote_item,quote_items,recurring_invoice,recurring_invoices,payment,payments,product,products,task,tasks'],
             'parameters.date_key' => ['bail','sometimes', 'string'],
             'parameters.status' => ['bail','sometimes', 'nullable', 'string'],
+            'parameters.include_project_tasks' => ['bail','sometimes', 'boolean', 'required_if:template,invoice_outstanding_tasks'],
+            'parameters.auto_send' => ['bail','sometimes', 'boolean', 'required_if:template,invoice_outstanding_tasks'],
+            // 'parameters.invoice_id' => ['bail','sometimes', 'string', 'required_if:template,payment_schedule'],
+            'parameters.auto_bill' => ['bail','sometimes', 'boolean', 'required_if:template,payment_schedule'],
+            'parameters.schedule' => ['bail', 'array', 'required_if:template,payment_schedule','min:1'],
+            'parameters.schedule.*.id' => ['bail','sometimes', 'integer'],
+            'parameters.schedule.*.date' => ['bail','sometimes', 'date:Y-m-d'],
+            'parameters.schedule.*.amount' => ['bail','sometimes', 'numeric'],
+            'parameters.schedule.*.is_amount' => ['bail','sometimes', 'boolean'],
         ];
 
         return $rules;
@@ -90,6 +100,10 @@ class UpdateSchedulerRequest extends Request
             $input['parameters']['clients'] = [];
         }
 
+        if(isset($input['parameters']['invoice_id'])) {
+            unset($input['parameters']['invoice_id']);
+        }
+        
         if (isset($input['parameters']['status'])) {
 
 
@@ -105,10 +119,22 @@ class UpdateSchedulerRequest extends Request
                                                     })->merge($task_statuses)
                                                     ->implode(",") ?? '';
         }
+        
+        if (isset($input['parameters']['schedule']) && is_array($input['parameters']['schedule']) && count($input['parameters']['schedule']) > 0) {
+            $input['remaining_cycles'] = count($input['parameters']['schedule']);
+        }
 
         $this->replace($input);
 
-
-
     }
+
+    public function messages()
+    {
+        return [
+            'parameters.schedule.min' => 'The schedule must have at least one item.',
+            'parameters.schedule' => 'You must have at least one schedule entry.',
+            'parameters.invoice_id' => 'You must select an invoice.'
+        ];
+    }
+
 }

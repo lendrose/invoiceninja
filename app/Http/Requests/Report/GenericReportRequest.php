@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -38,6 +39,7 @@ class GenericReportRequest extends Request
             'document_email_attachment' => 'sometimes|bool',
             'pdf_email_attachment' => 'sometimes|bool',
             'include_deleted' => 'required|bool',
+            'product_key' => 'sometimes|string|nullable',
             // 'status' => 'sometimes|string|nullable|in:all,draft,sent,viewed,paid,unpaid,overdue',
         ];
     }
@@ -68,6 +70,7 @@ class GenericReportRequest extends Request
         $input['user_id'] = auth()->user()->id;
 
         if (!$this->checkAuthority()) {
+            $input['product_key'] = '';
             $input['date_range'] = '';
             $input['start_date'] = '';
             $input['end_date'] = '';

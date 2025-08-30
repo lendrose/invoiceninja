@@ -117,7 +117,7 @@ class VendorHtmlEngine
         if (! $this->vendor->currency()) {
             throw new Exception(debug_backtrace()[1]['function'], 1);
         }
-
+        
         App::forgetInstance('translator');
         $t = app('translator');
         App::setLocale($this->vendor->locale());
@@ -381,11 +381,18 @@ class VendorHtmlEngine
         $data['$product.product3'] = ['value' => '', 'label' => $this->helpers->makeCustomField($this->company->custom_fields, 'product3')];
         $data['$product.product4'] = ['value' => '', 'label' => $this->helpers->makeCustomField($this->company->custom_fields, 'product4')];
 
+        $signature_invite = $this->invitation->signature_base64 ? $this->invitation : $this->entity->invitations()->whereNotNull('signature_base64')->orderBy('updated_at','desc')->first();
+
         if ($this->settings->signature_on_pdf) {
-            $data['$contact.signature'] = ['value' => $this->invitation->signature_base64, 'label' => ctrans('texts.signature')];
+            $data['$contact.signature'] = ['value' => $signature_invite?->signature_base64 ?? '', 'label' => ctrans('texts.signature')];
         } else {
             $data['$contact.signature'] = ['value' => '', 'label' => ''];
         }
+
+        $data['$contact.signature_raw'] = ['value' => $signature_invite?->signature_base64 ?? '', 'label' => ctrans('texts.signature')];
+        $data['$contact.signature_date'] = ['value' => $signature_invite?->signature_date ? $this->translateDate($signature_invite->signature_date, $this->company->date_format(), $this->vendor->locale()) : ' ', 'label' => ctrans('texts.date')];
+        $data['$contact.signature_ip'] = ['value' => $signature_invite?->signature_ip ?? '', 'label' => ctrans('texts.address')];
+
 
         $data['$thanks'] = ['value' => '', 'label' => ctrans('texts.thanks')];
         $data['$from'] = ['value' => '', 'label' => ctrans('texts.from')];
@@ -408,7 +415,7 @@ class VendorHtmlEngine
         $data['$item'] = ['value' => '', 'label' => ctrans('texts.item')];
         $data['$description'] = ['value' => '', 'label' => ctrans('texts.description')];
 
-        $data['$entity_footer'] = ['value' => Helpers::processReservedKeywords(\nl2br($this->entity->footer ??''), $this->company), 'label' => ''];
+        $data['$entity_footer'] = ['value' => Helpers::processReservedKeywords(\nl2br($this->entity->footer ?? ''), $this->company), 'label' => ''];
         $data['$footer'] = &$data['$entity_footer'];
 
         $data['$page_size'] = ['value' => $this->settings->page_size, 'label' => ''];
@@ -574,15 +581,16 @@ class VendorHtmlEngine
 
     private function getCountryName(): string
     {
+        return once(function () {
+            /** @var \Illuminate\Support\Collection<\App\Models\Country> */
+            $countries = app('countries');
 
-        /** @var \Illuminate\Support\Collection<\App\Models\Country> */
-        $countries = app('countries');
+            $country = $countries->first(function ($item) {
+                return $item->id == $this->settings->country_id;
+            });
 
-        $country = $countries->first(function ($item) {
-            return $item->id == $this->settings->country_id;
+            return $country ? ctrans('texts.country_' . $country->name) : '&nbsp;';
         });
-
-        return $country ? ctrans('texts.country_' . $country->name) : '&nbsp;';
     }
 
 
@@ -593,10 +601,7 @@ class VendorHtmlEngine
         if ($country) {
             return $country->iso_3166_2;
         }
-        // if ($country) {
-        //     return ctrans('texts.country_' . $country->iso_3166_2);
-        // }
-
+        
         return '&nbsp;';
     }
     /**

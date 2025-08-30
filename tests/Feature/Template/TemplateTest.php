@@ -224,9 +224,9 @@ class TemplateTest extends TestCase
         try {
             $twig->parse($twig->tokenize(new \Twig\Source($this->payments_body, '')));
             $this->assertTrue(true);
-            echo json_encode(['status' => 'ok']);
+            // echo json_encode(['status' => 'ok']);
         } catch (\Twig\Error\SyntaxError $e) {
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            // echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
 
     }
@@ -239,10 +239,10 @@ class TemplateTest extends TestCase
 
         try {
             $twig->parse($twig->tokenize(new \Twig\Source($this->broken_twig_template, '')));
-            echo json_encode(['status' => 'ok']);
+            // echo json_encode(['status' => 'ok']);
         } catch (\Twig\Error\SyntaxError $e) {
             $this->assertTrue(true);
-            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+            // echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
         }
 
     }
@@ -310,7 +310,7 @@ class TemplateTest extends TestCase
         $this->assertNotNull($ts);
         $this->assertIsArray($ts->getData());
 
-        nlog($ts->getData());
+        // nlog($ts->getData());
 
     }
 

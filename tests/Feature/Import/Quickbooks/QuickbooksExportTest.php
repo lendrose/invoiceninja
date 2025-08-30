@@ -38,7 +38,8 @@ class QuickbooksExportTest extends TestCase
     {
         parent::setUp();      
         
-        if(config('ninja.is_travis') || !config('services.quickbooks.client_id')){
+
+        if(config('ninja.testvars.travis') || !config('services.quickbooks.client_id')){
             $this->markTestSkipped('No Quickbooks Client ID found');
         }
 

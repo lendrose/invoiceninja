@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -89,7 +90,8 @@ class BankTransaction extends BaseModel
         'vendor_id',
         'amount',
         'participant',
-        'participant_name'
+        'participant_name',
+        'currency_code'
     ];
 
 

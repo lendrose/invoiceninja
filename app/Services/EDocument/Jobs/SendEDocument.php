@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -59,7 +60,7 @@ class SendEDocument implements ShouldQueue
 
         $model = $this->entity::withTrashed()->find($this->id);
 
-        if(isset($model->backup->guid) && is_string($model->backup->guid)){
+        if (isset($model->backup->guid) && is_string($model->backup->guid)) {
             nlog("already sent!");
             return;
         }
@@ -69,6 +70,8 @@ class SendEDocument implements ShouldQueue
             return; //Bad Actor present.
         }
 
+        $model = $model->service()->markSent()->save();
+        
         /** Concrete implementation current linked to Storecove only */
         $p = new Peppol($model);
         $p->run();
@@ -93,7 +96,7 @@ class SendEDocument implements ShouldQueue
             'account_key' => $model->company->account->key,
             'e_invoicing_token' => $model->company->account->e_invoicing_token,
         ];
-        
+
         //Self Hosted Sending Code Path
         if (Ninja::isSelfHost() && ($model instanceof Invoice) && $model->company->peppolSendingEnabled()) {
 
@@ -101,7 +104,7 @@ class SendEDocument implements ShouldQueue
                 ->post(config('ninja.hosted_ninja_url')."/api/einvoice/submission", $payload);
 
             if ($r->successful()) {
-                
+
                 if ($r->hasHeader('X-EINVOICE-QUOTA')) {
                     $account = $model->company->account;
                     $account->e_invoice_quota = (int) $r->header('X-EINVOICE-QUOTA');
@@ -215,7 +218,7 @@ class SendEDocument implements ShouldQueue
 
         $activity->save();
 
-        if($activity_id == Activity::EINVOICE_DELIVERY_SUCCESS){
+        if ($activity_id == Activity::EINVOICE_DELIVERY_SUCCESS) {
 
             $backup = ($model->backup && is_object($model->backup)) ? $model->backup : new \stdClass();
             $backup->guid = str_replace('"', '', $notes);
@@ -247,11 +250,11 @@ class SendEDocument implements ShouldQueue
             nlog($exception->getMessage());
         }
 
-        config(['queue.failed.driver' => null]);
+        // config(['queue.failed.driver' => null]);
     }
 
     public function middleware()
     {
-        return [new WithoutOverlapping($this->entity.$this->id.$this->db)];
+        return [(new WithoutOverlapping($this->entity.$this->id.$this->db))->releaseAfter(60)->expireAfter(60)];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -131,6 +132,10 @@ class DocumentExport extends BaseExport
     {
         if (in_array('record_type', $this->input['report_keys'])) {
             $entity['record_type'] = class_basename($document->documentable);
+        }
+
+        if (in_array('created_at', $this->input['report_keys'])) {
+            $entity['created_at'] = \Carbon\Carbon::createFromTimestamp($document->created_at)->format('Y-m-d H:i:s');
         }
 
         // if(in_array('record_name', $this->input['report_keys']))

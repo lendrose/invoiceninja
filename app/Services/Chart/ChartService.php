@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -92,7 +93,6 @@ class ChartService
             $data[$key]['payments'] = $this->getPaymentChartQuery($start_date, $end_date, $key);
             $data[$key]['expenses'] = $this->getExpenseChartQuery($start_date, $end_date, $key);
         }
-
 
         $data[999]['invoices'] = $this->getAggregateInvoiceChartQuery($start_date, $end_date);
         $data[999]['outstanding'] = $this->getAggregateOutstandingChartQuery($start_date, $end_date);

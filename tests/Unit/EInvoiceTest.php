@@ -74,7 +74,6 @@ class EInvoiceTest extends TestCase
 
         $data = $this->getExpiredPurchases([$company->company_key], true);
 
-
         $this->assertEquals(100, $data['purchased']);
         $this->assertEquals(-50, $data['sent'] + $data['received']);
 

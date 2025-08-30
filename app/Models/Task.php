@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -247,30 +248,28 @@ class Task extends BaseModel
         }
     }
 
-    public function calcDuration($start_time_cutoff = 0, $end_time_cutoff = 0)
+    public function calcDuration(bool $billable = false)
     {
         $duration = 0;
         $parts = json_decode($this->time_log ?? '{}') ?: [];
 
         foreach ($parts as $part) {
+
+            if($billable && isset($part[3]) && !$part[3]){
+                continue;
+            }
+
             $start_time = $part[0];
+
             if (count($part) == 1 || ! $part[1]) {
                 $end_time = time();
             } else {
                 $end_time = $part[1];
             }
 
-            if ($start_time_cutoff) {
-                $start_time = max($start_time, $start_time_cutoff);
-            }
-            if ($end_time_cutoff) {
-                $end_time = min($end_time, $end_time_cutoff);
-            }
-
             $duration += max($end_time - $start_time, 0);
         }
 
-        // return CarbonInterval::seconds(round($duration))->locale($this->company->locale())->cascade()->forHumans();
         return round($duration);
     }
 
@@ -281,7 +280,7 @@ class Task extends BaseModel
 
     public function getRate(): float
     {
-        if(is_numeric($this->rate) && $this->rate > 0) {
+        if (is_numeric($this->rate) && $this->rate > 0) {
             return $this->rate;
         }
 
@@ -312,7 +311,7 @@ class Task extends BaseModel
 
     public function getQuantity(): float
     {
-        return round(($this->calcDuration() / 3600), 2);
+        return round(($this->calcDuration(true) / 3600), 2);
     }
 
     public function logDuration(int $start_time, int $end_time)
@@ -322,7 +321,7 @@ class Task extends BaseModel
 
     public function taskValue(): float
     {
-        return round(($this->calcDuration() / 3600) * $this->getRate(), 2);
+        return round(($this->calcDuration(true) / 3600) * $this->getRate(), 2);
     }
 
     public function isRunning(): bool
@@ -373,9 +372,6 @@ class Task extends BaseModel
                 $hours = ctrans('texts.hours');
 
                 $parts = [];
-
-                // $parts[] = '<div class="task-time-details">';
-
                 $date_time = [];
 
                 if ($this->company->invoice_task_datelog) {
@@ -396,7 +392,7 @@ class Task extends BaseModel
                 if ($this->company->invoice_task_hours) {
                     $duration = $this->logDuration($log[0], $log[1]);
 
-                    if($this->company->use_comma_as_decimal_place){
+                    if ($this->company->use_comma_as_decimal_place) {
                         $duration = number_format($duration, 2, ',', '.');
                     }
 
@@ -409,15 +405,19 @@ class Task extends BaseModel
                     $parts[] = $interval_description;
                 }
 
-                // $parts[] = '</div>';
+                //need to return early if there is nothing, otherwise we end up injecting a blank new line.
+                if (count($parts) == 1 && empty($parts[0])) {
+                    return '';
+                }
 
                 return implode(PHP_EOL, $parts);
             })
+            ->filter()//filters any empty strings.
             ->implode(PHP_EOL);
 
         $body = '';
 
-        if (strlen($this->description) > 1) {
+        if (strlen($this->description ?? '') > 1) {
             $body .= $this->description. " ";
         }
 

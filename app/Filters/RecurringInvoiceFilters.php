@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -85,12 +86,15 @@ class RecurringInvoiceFilters extends QueryFilters
         }
 
         $recurring_filters = [];
+        
+        if (in_array('draft', $status_parameters)) {
+            $recurring_filters[] = RecurringInvoice::STATUS_DRAFT;
+        }
 
         if (in_array('active', $status_parameters)) {
             $recurring_filters[] = RecurringInvoice::STATUS_ACTIVE;
         }
-
-
+        
         if (in_array('paused', $status_parameters)) {
             $recurring_filters[] = RecurringInvoice::STATUS_PAUSED;
         }
@@ -125,7 +129,7 @@ class RecurringInvoiceFilters extends QueryFilters
     {
 
         $sort_col = explode('|', $sort);
-        
+
         if ($sort_col[0] == 'next_send_datetime') {
             $sort_col[0] = 'next_send_date';
         }

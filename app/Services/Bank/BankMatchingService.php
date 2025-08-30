@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -27,7 +28,11 @@ class BankMatchingService implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public $company_id, public $db)
+    public $tries = 1;
+
+    public $timeout = 3600;
+
+    public function __construct(public int $company_id, public string $db)
     {
     }
 
@@ -45,6 +50,16 @@ class BankMatchingService implements ShouldQueue
 
     public function middleware()
     {
-        return [(new WithoutOverlapping($this->company_id))];
+        return [(new WithoutOverlapping($this->db."_".$this->company_id))->releaseAfter(60)->expireAfter(60)];
+    }
+
+    public function failed($exception = null)
+    {
+
+        if ($exception) {
+            nlog("BANKMATCHINGSERVICE:: ". $exception->getMessage());
+        }
+
+        config(['queue.failed.driver' => null]);
     }
 }

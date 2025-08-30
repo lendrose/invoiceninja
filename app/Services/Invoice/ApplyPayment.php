@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -87,7 +88,7 @@ class ApplyPayment extends AbstractService
              ->workFlow()
              ->unlockDocuments()
              ->save();
-
+        
         return $this->invoice;
     }
 }

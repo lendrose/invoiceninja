@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -55,6 +56,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property float $promo_price
  * @property int $registration_required
  * @property int $use_inventory_management
+ * @property string|null $steps
  * @property string|null $optional_product_ids
  * @property string|null $optional_recurring_product_ids
  * @property-read \App\Models\Company $company

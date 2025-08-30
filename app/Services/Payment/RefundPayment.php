@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -11,15 +12,16 @@
 
 namespace App\Services\Payment;
 
-use App\Exceptions\PaymentRefundFailed;
-use App\Jobs\Payment\EmailRefundPayment;
-use App\Models\Activity;
+use stdClass;
+use App\Utils\Ninja;
 use App\Models\Credit;
 use App\Models\Invoice;
 use App\Models\Payment;
+use App\Models\Activity;
+use App\Exceptions\PaymentRefundFailed;
+use App\Jobs\Payment\EmailRefundPayment;
 use App\Repositories\ActivityRepository;
-use App\Utils\Ninja;
-use stdClass;
+use App\Listeners\Payment\PaymentTransactionEventEntry;
 
 class RefundPayment
 {
@@ -308,7 +310,10 @@ class RefundPayment
                 if ($invoice->is_deleted) {
                     $invoice->delete();
                 }
+
             }
+
+            PaymentTransactionEventEntry::dispatch($this->payment, array_column($this->refund_data['invoices'], 'invoice_id'), $this->payment->company->db, 0, false);
 
         } else {
             //if we are refunding and no payments have been tagged, then we need to decrement the client->paid_to_date by the total refund amount.

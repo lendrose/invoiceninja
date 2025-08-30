@@ -68,9 +68,9 @@ class TaxConfigTest extends TestCase
         // $this->assertEquals('CA', USStates::getState('90210'));
 
         $this->bootApi($client);
-
         $this->tp->updateClientTaxData();
 
+        $this->assertNotNull($client);
     }
 
 }

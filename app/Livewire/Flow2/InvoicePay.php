@@ -145,8 +145,9 @@ class InvoicePay extends Component
 
         $company_gateway = CompanyGateway::query()->find($company_gateway_id);
 
-        if(!$company_gateway)
+        if (!$company_gateway) {
             return $this->required_fields = false;
+        }
 
         $this->checkRequiredFields($company_gateway);
     }
@@ -160,12 +161,13 @@ class InvoicePay extends Component
     private function checkRequiredFields(CompanyGateway $company_gateway)
     {
 
-        $fields = $company_gateway->driver()->getClientRequiredFields();
+        /** @var \App\Models\ClientContact $contact */
+        $contact = $this->getContext()['contact'];
+
+        $fields = $company_gateway->driver($contact->client)->getClientRequiredFields();
 
         $this->setContext('fields', $fields); // $this->context['fields'] = $fields;
 
-        /** @var \App\Models\ClientContact $contact */
-        $contact = $this->getContext()['contact'];
 
         foreach ($fields as $index => $field) {
             $_field = $this->mappings[$field['name']];
@@ -291,7 +293,7 @@ class InvoicePay extends Component
             'amount' => array_sum(array_column($payable_invoices, 'amount')),
             'payable_invoices' => $payable_invoices,
         ]);
-        
+
     }
 
     public function render(): \Illuminate\Contracts\View\Factory|\Illuminate\View\View

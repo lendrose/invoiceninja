@@ -33,14 +33,14 @@ span {
     <div class="px-3 border-fuchsia-600 border-b-2 pb-3">
     
         <div id="company-details" class="mx-auto">
-            {!! $company_details !!}
+            {!! App\Services\Pdf\Purify::clean($company_details) !!}
         </div>
 
     </div>
 
     <div class="border-fuchsia-600 border-b-2 pb-3 mt-3">
 
-        <div id="entity-details"> {!! $entity_details !!} </div>
+        <div id="entity-details"> {!! App\Services\Pdf\Purify::clean($entity_details) !!} </div>
 
     </div>
 
@@ -54,7 +54,7 @@ span {
             </button>
 
             <div id="terms" class="py-3"  x-show="show_user">
-                {!! $user_details !!}
+                {!! App\Services\Pdf\Purify::clean($user_details) !!}
             </div>
 
 
@@ -78,7 +78,7 @@ span {
                         <div class="product-information">
                             <div class="item-details">
 
-                                <p class="overflow-ellipsis overflow-hidden px-1 mb-2">{!! $product['notes'] !!}</p>
+                                <p class="overflow-ellipsis overflow-hidden px-1 mb-2">{!! App\Services\Pdf\Purify::clean($product['notes']) !!}</p>
                                 <p class="mt-2">
                                     @if($show_quantity)
                                     {{ $product['quantity'] }} x
@@ -120,7 +120,7 @@ span {
                         <div class="">
                             <div class="">
                                 <p class="mt-2">{{ $service['quantity'] }} × {{ $service['cost'] }}</p> 
-                                <p class="overflow-ellipsis overflow-hidden px-1 mb-2">{!! $service['notes'] !!}</p>
+                                <p class="overflow-ellipsis overflow-hidden px-1 mb-2">{!! App\Services\Pdf\Purify::clean($service['notes']) !!}</p>
                             </div>
                         </div>
                     </td>

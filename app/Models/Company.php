@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -122,6 +123,7 @@ use Laracasts\Presenter\PresentableTrait;
  * @property string|null $inbound_mailbox_blacklist
  * @property string|null $e_invoice_certificate_passphrase
  * @property string|null $e_invoice_certificate
+ * @property object|null $origin_tax_data
  * @property int $deleted_at
  * @property string|null $smtp_username
  * @property string|null $smtp_password
@@ -132,6 +134,9 @@ use Laracasts\Presenter\PresentableTrait;
  * @property \App\DataMapper\QuickbooksSettings|null $quickbooks
  * @property boolean $smtp_verify_peer
  * @property int|null $legal_entity_id
+ * @property bool $invoice_task_item_description
+ * @property bool $show_task_item_description
+ * @property bool $invoice_task_project_header
  * @property-read \App\Models\Account $account
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Activity> $activities
  * @property-read int|null $activities_count
@@ -223,6 +228,7 @@ use Laracasts\Presenter\PresentableTrait;
  * @property-read int|null $users_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Vendor> $vendors
  * @property-read int|null $vendors_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Location> $locations
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Webhook> $webhooks
  * @method static \Illuminate\Database\Eloquent\Builder|Company where($query)
  * @method static \Illuminate\Database\Eloquent\Builder|Company find($query)
@@ -654,12 +660,16 @@ class Company extends BaseModel
 
     public function country()
     {
+        return once(function () {   
 
-        /** @var \Illuminate\Support\Collection<\App\Models\Country> */
-        $countries = app('countries');
+            /** @var \Illuminate\Support\Collection<\App\Models\Country> */
+            $countries = app('countries');
+            $country_id = $this->getSetting('country_id');
 
-        return $countries->first(function ($item) {
-            return $item->id == $this->getSetting('country_id');
+            return $countries->first(function ($item) use ($country_id) {
+                    return $item->id == $country_id;
+                });
+
         });
     }
 
@@ -670,14 +680,16 @@ class Company extends BaseModel
 
     public function timezone()
     {
+        return once(function () {
 
-        /** @var \Illuminate\Support\Collection<\App\Models\TimeZone> */
-        $timezones = app('timezones');
+            /** @var \Illuminate\Support\Collection<\App\Models\TimeZone> */
+            $timezones = app('timezones');
 
-        return $timezones->first(function ($item) {
-            return $item->id == $this->settings->timezone_id;
+            return $timezones->first(function ($item) {
+                return $item->id == $this->settings->timezone_id;
+            });
+
         });
-
     }
 
     public function designs()
@@ -702,15 +714,18 @@ class Company extends BaseModel
 
     public function language()
     {
+        return once(function () {
 
-        /** @var \Illuminate\Support\Collection<\App\Models\Language> */
-        $languages = app('languages');
+            /** @var \Illuminate\Support\Collection<\App\Models\Language> */
+            $languages = app('languages');
 
-        $language = $languages->first(function ($item) {
-            return $item->id == $this->settings->language_id;
+            $language = $languages->first(function ($item) {
+                return $item->id == $this->settings->language_id;
+            });
+
+            return $language ?? $languages->first();
+
         });
-
-        return $language ?? $languages->first();
     }
 
     public function getLocale()
@@ -751,12 +766,13 @@ class Company extends BaseModel
 
     public function currency()
     {
+        return once(function () {
+            /** @var \Illuminate\Support\Collection<\App\Models\Currency> */
+            $currencies = app('currencies');
 
-        /** @var \Illuminate\Support\Collection<\App\Models\Currency> */
-        $currencies = app('currencies');
-
-        return $currencies->first(function ($item) {
-            return $item->id == $this->settings->currency_id;
+            return $currencies->first(function ($item) {
+                return $item->id == $this->settings->currency_id;
+            });
         });
     }
 
@@ -882,9 +898,9 @@ class Company extends BaseModel
 
     public function notification(Notification $notification)
     {
-        try{
+        try {
             return new NotificationService($this, $notification);
-        } catch(\Throwable $th){
+        } catch (\Throwable $th) {
             nlog("Could not access notification service");
             nlog($th->getMessage());
             return null;
@@ -975,13 +991,15 @@ class Company extends BaseModel
 
     public function date_format()
     {
+        return once(function () {
+            /** @var \Illuminate\Support\Collection<\App\Models\DateFormat> */
+            $date_formats = app('date_formats');
+                $date_format = $this->getSetting('date_format_id');
 
-        /** @var \Illuminate\Support\Collection<\App\Models\DateFormat> */
-        $date_formats = app('date_formats');
-
-        return $date_formats->first(function ($item) {
-            return $item->id == $this->getSetting('date_format_id');
-        })->format;
+                return $date_formats->first(function ($item) use ($date_format) {
+                    return $item->id == $date_format;
+                })->format;
+        });
     }
 
     public function getInvoiceCert()

@@ -17,6 +17,7 @@ use Tests\MockAccountData;
 use App\Factory\InvoiceItemFactory;
 use App\Factory\CloneQuoteToInvoiceFactory;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * 
@@ -31,6 +32,8 @@ class CloneQuoteToInvoiceFactoryTest extends TestCase
         parent::setUp();
 
         $this->makeTestData();
+
+        Model::reguard();
     }
 
     public function testCloneItemSanityInvoice()

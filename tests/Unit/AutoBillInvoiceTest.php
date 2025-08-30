@@ -14,6 +14,7 @@ namespace Tests\Unit;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\MockAccountData;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * 

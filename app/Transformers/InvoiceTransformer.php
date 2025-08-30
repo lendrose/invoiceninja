@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -182,6 +183,11 @@ class InvoiceTransformer extends EntityTransformer
         if (request()->has('is_locked') && request()->query('is_locked') == 'true') {
             $data['is_locked'] = (bool) $invoice->isLocked();
         }
+        
+        if (request()->has('show_schedule') && request()->query('show_schedule') == 'true') {
+            $data['schedule'] = (array) $invoice->paymentSchedule();
+        }
+
 
         return $data;
 

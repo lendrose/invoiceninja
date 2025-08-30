@@ -51,6 +51,8 @@ class TaxRuleConsistencyTest extends TestCase
 
     private function setupTestData(array $params = []): array
     {
+        \Illuminate\Support\Once::flush();
+        
         $company_iso = isset($params['company_country']) ? $params['company_country'] : 'DE';
 
         $settings = CompanySettings::defaults();
@@ -167,6 +169,8 @@ class TaxRuleConsistencyTest extends TestCase
         ];
 
         foreach ($scenarios as $name => $scenario) {
+
+
             $data = $this->setupTestData($scenario['params']);
 
             // Test BaseRule

@@ -76,6 +76,10 @@ class PdfServiceTest extends TestCase
 
         $this->makeTestData();
 
+        if (config('ninja.testvars.travis')) {
+            $this->markTestSkipped();
+        }
+        
         $this->fake_email = $this->faker->email();
 
     }

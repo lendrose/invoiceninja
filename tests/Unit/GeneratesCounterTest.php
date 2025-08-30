@@ -90,6 +90,7 @@ class GeneratesCounterTest extends TestCase
         $invoice->number = null;
         $invoice->status_id = Invoice::STATUS_DRAFT;
         $invoice->save();
+        $invoice->calc()->getInvoice();
 
             $this->travelTo('2025-02-01');
 
@@ -114,6 +115,8 @@ class GeneratesCounterTest extends TestCase
             $invoice->number = null;
             $invoice->status_id = Invoice::STATUS_DRAFT;
             $invoice->save();
+
+            $invoice->calc()->getInvoice();
 
             $invoice = $invoice->service()->markSent()->save();
 
@@ -155,6 +158,8 @@ class GeneratesCounterTest extends TestCase
         $invoice->status_id = Invoice::STATUS_DRAFT;
         $invoice->save();
 
+        $invoice->calc()->getInvoice();
+
         $invoice = $invoice->service()->markSent()->save();
         
         $this->assertNotNull($invoice->number);
@@ -172,6 +177,8 @@ class GeneratesCounterTest extends TestCase
         $invoice->number = null;
         $invoice->status_id = Invoice::STATUS_DRAFT;
         $invoice->save();
+
+        $invoice->calc()->getInvoice();
 
         $invoice = $invoice->service()->markSent()->save();
 
@@ -415,13 +422,16 @@ class GeneratesCounterTest extends TestCase
 
     public function testInvoiceNumberValue()
     {
-        $invoice_number = $this->getNextInvoiceNumber($this->client->fresh(), $this->invoice->fresh());
 
-        $this->assertEquals($invoice_number, '0002');
+        $this->assertEquals('0002', $this->invoice->fresh()->number);
 
         $invoice_number = $this->getNextInvoiceNumber($this->client->fresh(), $this->invoice->fresh());
 
         $this->assertEquals($invoice_number, '0003');
+
+        $invoice_number = $this->getNextInvoiceNumber($this->client->fresh(), $this->invoice->fresh());
+
+        $this->assertEquals($invoice_number, '0004');
     }
 
     public function testQuoteNumberValue()
@@ -598,11 +608,13 @@ class GeneratesCounterTest extends TestCase
 
         $invoice_number = $this->getNextInvoiceNumber($cliz->fresh(), $this->invoice);
 
-        $this->assertEquals($invoice_number, '0002');
+        $this->assertEquals('0002', $this->invoice->fresh()->number);
+
+        $this->assertEquals('0003', $invoice_number);
 
         $invoice_number = $this->getNextInvoiceNumber($cliz->fresh(), $this->invoice);
 
-        $this->assertEquals($invoice_number, '0003');
+        $this->assertEquals('0004', $invoice_number );
     }
 
     public function testClientNumber()

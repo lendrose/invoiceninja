@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -16,13 +17,11 @@ use setasign\Fpdi\Fpdi;
 class PDF extends FPDI
 {
     public $text_alignment = 'L';
+    public $x_offset = 0; // New property for X-axis offset
 
     public function Footer()
     {
-        $this->SetXY(config('ninja.pdf_page_numbering_x_alignment'), config('ninja.pdf_page_numbering_y_alignment'));
-
         $this->SetFont('Arial', 'I', 9);
-
         $this->SetTextColor(135, 135, 135);
 
         $trans = ctrans('texts.pdf_page_info', ['current' => $this->PageNo(), 'total' => '{nb}']);
@@ -32,7 +31,28 @@ class PDF extends FPDI
         } catch (\Exception $e) {
         }
 
-        $this->Cell(0, 5, $trans, 0, 0, $this->text_alignment);
+        // Set Y position
+        $this->SetY(config('ninja.pdf_page_numbering_y_alignment'));
+        
+        // Calculate X position with offset
+        $base_x = config('ninja.pdf_page_numbering_x_alignment');
+        
+        // Set X position based on alignment
+        if ($this->text_alignment == 'L') {
+            $this->SetX($this->GetX() + $base_x);
+            // Adjust cell width to account for X offset
+            $cell_width = $this->GetPageWidth();
+            $this->Cell($cell_width, 5, $trans, 0, 0, 'L');
+        } elseif ($this->text_alignment == 'R') {
+            $this->SetX($this->GetX() + $base_x);
+            // For right alignment, calculate width from X position to right edge
+            $cell_width = $this->GetPageWidth();
+            $this->Cell($cell_width, 5, $trans, 0, 0, 'R');
+        } else {
+            // For center alignment, calculate appropriate width
+            $cell_width = $this->GetPageWidth();
+            $this->Cell($cell_width, 5, $trans, 0, 0, 'C');
+        }
     }
 
     public function setAlignment($alignment)

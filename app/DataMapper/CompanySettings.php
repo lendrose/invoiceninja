@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Invoice Ninja (https://invoiceninja.com).
  *
@@ -11,8 +12,9 @@
 
 namespace App\DataMapper;
 
-use App\Utils\Traits\MakesHash;
 use stdClass;
+use App\Utils\Ninja;
+use App\Utils\Traits\MakesHash;
 
 /**
  * CompanySettings.
@@ -229,7 +231,7 @@ class CompanySettings extends BaseSettings
     public $require_quote_signature = false;  //@TODO ben to confirm
 
     //email settings
-    public $email_sending_method = 'default'; //enum 'default','gmail','office365' 'client_postmark', 'client_mailgun', 'mailgun', 'client_brevo' //@implemented
+    public $email_sending_method = 'default'; //enum 'default','gmail','office365' 'client_postmark', 'client_mailgun', 'mailgun', 'client_brevo', 'client_ses', 'ses' //@implemented
 
     public $gmail_sending_user_id = '0'; //@implemented
 
@@ -528,7 +530,16 @@ class CompanySettings extends BaseSettings
 
     public bool $unlock_invoice_documents_after_payment = false;
 
+    public string $ses_secret_key = '';
+    public string $ses_access_key = '';
+    public string $ses_region = '';
+    public string $ses_topic_arn = '';
+
     public static $casts = [
+        'ses_topic_arn' => 'string',
+        'ses_secret_key' => 'string',
+        'ses_access_key' => 'string',
+        'ses_region' => 'string',
         'unlock_invoice_documents_after_payment' => 'bool',
         'preference_product_notes_for_html_view' => 'bool',
         'enable_client_profile_update'       => 'bool',
@@ -930,7 +941,10 @@ class CompanySettings extends BaseSettings
     {
         $notification = new stdClass();
         $notification->email = [];
-        $notification->email = ['invoice_sent_all', 'payment_success_all', 'payment_manual_all'];
+
+        if(Ninja::isSelfHost()) {
+            $notification->email = ['invoice_sent_all', 'payment_success_all', 'payment_manual_all'];
+        }
 
         return $notification;
     }

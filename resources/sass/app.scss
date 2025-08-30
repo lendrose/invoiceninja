@@ -11,6 +11,18 @@
 @import 'components/badge';
 @import 'components/datatables';
 
+
+.lendrose-bnpl-btn {
+    background: linear-gradient(to right, #116DF4, #3EDB93);
+    color: white !important;
+    transition: all 0.2s ease-in-out;
+    cursor: pointer;
+
+    &:hover {
+        background: linear-gradient(to right, #241f21, #3EDB93);
+    }
+}
+
 .pagination {
     @apply flex items-center #{!important};
 

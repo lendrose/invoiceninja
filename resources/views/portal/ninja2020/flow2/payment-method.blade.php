@@ -26,8 +26,8 @@
                 <a href="{{ $company->settings->lendrose_bnpl_url }}" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300 text-center justify-center bg-blue-50 hover:bg-blue-100 border-blue-200">
-                    <span class="text-blue-700 font-medium">Lendrose Buy Now Pay Later</span>
+                   class="lendrose-bnpl-btn flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300">
+                    <span class="font-medium">Lendrose Buy Now Pay Later</span>
                 </a>
             @endif
         </div>

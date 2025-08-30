@@ -252,4 +252,23 @@ class CompanySettingsTest extends TestCase
 
         $this->assertEquals($arr['data'][0]['company']['settings']['reset_counter_date'], '1/1/2000');
     }
+
+    public function testLendroseBnplUrlSetting()
+    {
+        $settings = $this->company->settings;
+        $settings->lendrose_bnpl_url = 'https://example.com/bnpl';
+
+        $this->company->saveSettings($settings, $this->company);
+
+        $response = $this->withHeaders([
+                'X-API-SECRET' => config('ninja.api_secret'),
+                'X-API-Token' => $this->token,
+            ])->putJson('/api/v1/companies/'.$this->encodePrimaryKey($this->company->id), $this->company->toArray());
+
+        $response->assertStatus(200);
+
+        $arr = $response->json();
+
+        $this->assertEquals('https://example.com/bnpl', $arr['data']['settings']['lendrose_bnpl_url']);
+    }
 }

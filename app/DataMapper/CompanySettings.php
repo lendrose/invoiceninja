@@ -457,6 +457,8 @@ class CompanySettings extends BaseSettings
 
     public $auto_bill_standard_invoices = false;
 
+    public $lendrose_bnpl_url = '';
+
     public $email_alignment = 'center'; // center , left, right
 
     public $show_email_footer = true;
@@ -581,6 +583,7 @@ class CompanySettings extends BaseSettings
         'show_email_footer' => 'bool',
         'email_alignment' => 'string',
         'auto_bill_standard_invoices' => 'bool',
+        'lendrose_bnpl_url' => 'string',
         'postmark_secret' => 'string',
         'mailgun_secret' => 'string',
         'mailgun_domain' => 'string',

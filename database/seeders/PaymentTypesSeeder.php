@@ -86,6 +86,7 @@ class PaymentTypesSeeder extends Seeder
             ['name' => 'Crypto', 'gateway_type_id' => self::GATEWAY_TYPE_CRYPTO],
             ['name' => 'Credit', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT],
             ['name' => 'Zelle'],
+            ['name' => 'Lendrose Pay', 'gateway_type_id' => self::GATEWAY_TYPE_BANK_TRANSFER],
         ];
 
         $x = 1;

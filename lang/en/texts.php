@@ -1418,6 +1418,7 @@ $lang = array(
     'payment_type_Bitcoin' => 'Bitcoin',
     'payment_type_GoCardless' => 'GoCardless',
     'payment_type_Zelle' => 'Zelle',
+    'payment_type_Lendrose BNPL' => 'Lendrose BNPL',
 
     // Countries
     'country_Afghanistan' => 'Afghanistan',

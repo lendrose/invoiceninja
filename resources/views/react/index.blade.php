@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>{{ config('ninja.app_name') }}</title>
-  <meta name="google-signin-client_id" content="{{ config('services.google.client_id') }}">
+  <!-- <meta name="google-signin-client_id" content="{{ config('services.google.client_id') }}"> -->
+  <meta name="description" content="Lendrose Pay is an invoicing and payment processing platform that allows you to accept payments from your customers." />
 
   @include('react.head')
 

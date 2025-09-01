@@ -13,13 +13,29 @@
 
 
 .lendrose-bnpl-btn {
-    background: linear-gradient(to right, #116DF4, #3EDB93);
-    color: white !important;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
+    position: relative;
+    overflow: hidden;
 
-    &:hover {
-        background: linear-gradient(to right, #241f21, #3EDB93);
+    span {
+        z-index: 1;
+    }
+
+    &:before {
+        background: linear-gradient(to right, #116DF4, #3EDB93 50%, #241f21);
+        content: '';
+        height: 100%;
+        left: 0;
+        position: absolute;
+        top: 0;
+        transition: transform 0.3s ease-in-out;
+        width: 200%;
+        z-index: 0;
+    }
+
+    &:hover:before {
+        transform: translateX(-50%);
     }
 }
 

@@ -249,8 +249,14 @@ class Purify
         $html = str_replace('%24', '$', $html);
         libxml_use_internal_errors(true);
 
+        // Additional safety check: ensure HTML content exists after processing
+        $processed_html = htmlspecialchars_decode(htmlspecialchars($html, ENT_QUOTES, 'UTF-8'));
+        if (empty(trim($processed_html))) {
+            return '';
+        }
+
         $document = new \DOMDocument();
-        @$document->loadHTML(htmlspecialchars_decode(htmlspecialchars($html, ENT_QUOTES, 'UTF-8')), LIBXML_NONET);
+        @$document->loadHTML($processed_html, LIBXML_NONET);
 
         // Function to recursively check nodes
         $cleanNodes = function ($node) use (&$cleanNodes) {

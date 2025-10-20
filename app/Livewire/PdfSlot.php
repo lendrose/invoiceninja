@@ -200,9 +200,10 @@ class PdfSlot extends Component
         $html = strtr($string, $this->html_variables['labels']);
         $html = strtr($html, $this->html_variables['values']);
 
-        // Safety check: if result is empty after variable replacement, return original string
+        // Safety check: if result is empty after variable replacement, return empty string
+        // This prevents unresolved variables from being passed to Purify::clean()
         if (empty(trim($html))) {
-            return $string;
+            return '';
         }
 
         return $html;

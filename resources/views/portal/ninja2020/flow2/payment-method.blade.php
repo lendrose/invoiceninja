@@ -16,7 +16,7 @@
         <div class="my-3 flex flex-col space-y-3">
             @foreach($methods as $index => $method)
                 <button wire:loading.remove
-                    class="flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300"
+                    class="payment-method flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300"
                     wire:click="handleSelect('{{ $method['company_gateway_id'] }}', '{{ $method['gateway_type_id'] }}', '{{ $amount }}')">
                     <span>{{ $method['label'] }}</span>
                 </button>
@@ -26,49 +26,109 @@
                 <a href="{{ $company->settings->lendrose_bnpl_url }}" 
                    target="_blank" 
                    rel="noopener noreferrer"
-                   class="lendrose-bnpl-btn flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300">
+                   class="flex px-4 py-3 border rounded-lg lg:-mb-1 hover:shadow-sm transition duration-300">
                     <span class="font-medium">Lendrose Buy Now Pay Later</span>
                 </a>
             @endif
         </div>
     @endunless 
 
-    @script
+    @livewireStyles
+    @livewireScripts
+    
     <script>
-        Livewire.on('loadingCompleted', () => {
-            isLoading = false;
-        });
-
-        /* Livewire.on('singlePaymentMethodFound', (event) => {
-            $wire.dispatch('payment-method-selected', { company_gateway_id: event.company_gateway_id, gateway_type_id: event.gateway_type_id, amount: event.amount })
-        }); */
-
-        const buttons = document.querySelectorAll('.payment-method');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', (event) => {
-                // Hide all buttons except the clicked one
-                buttons.forEach(btn => {
-                    if (btn !== event.currentTarget) {
-                        btn.style.display = 'none';
-                    } else {
-                        // Disable the clicked button
-                        btn.disabled = true;
-
-                        // Show the spinner by removing the 'hidden' class
-                        const spinner = btn.querySelector('svg');
-                        if (spinner) {
-                            spinner.classList.remove('hidden');
-                        }
-
-                        const span = btn.querySelector('span');
-                        if (span) {
-                            span.style.display = 'none';
-                        }
-                    }
-                });
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Payment method script loaded');
+            console.log('DOM ready, checking for buttons...');
+            console.log('Window.Livewire available:', !!window.Livewire);
+            console.log('Document ready state:', document.readyState);
+            
+            // Check if Livewire scripts are loaded
+            const livewireScripts = document.querySelectorAll('script[src*="livewire"]');
+            console.log('Livewire scripts found:', livewireScripts.length);
+            livewireScripts.forEach((script, index) => {
+                console.log(`Livewire script ${index}:`, script.src);
             });
+            
+            // Check for Livewire script config
+            const livewireConfig = document.querySelector('script[data-navigate-once]');
+            console.log('Livewire config found:', !!livewireConfig);
+            
+            function attachButtonListeners() {
+                const buttons = document.querySelectorAll('.payment-method');
+                console.log('Found buttons:', buttons.length);
+                console.log('Buttons:', buttons);
+
+                buttons.forEach((button, index) => {
+                    console.log(`Button ${index}:`, button);
+                    console.log(`Button ${index} wire:click:`, button.getAttribute('wire:click'));
+                    console.log(`Button ${index} classes:`, button.className);
+                    
+                    button.addEventListener('click', (event) => {
+                        console.log('Payment method button clicked');
+                        console.log('Button element:', event.currentTarget);
+                        console.log('Button wire:click attribute:', event.currentTarget.getAttribute('wire:click'));
+                        
+                        // Check if Livewire is available
+                        if (window.Livewire) {
+                            console.log('Livewire is available, trying to find component');
+                            const component = window.Livewire.find(event.currentTarget.closest('[wire\\:id]')?.getAttribute('wire:id'));
+                            console.log('Livewire component:', component);
+                        } else {
+                            console.log('Livewire not available');
+                        }
+                        
+                        // Hide all buttons except the clicked one
+                        buttons.forEach(btn => {
+                            if (btn !== event.currentTarget) {
+                                btn.style.display = 'none';
+                            } else {
+                                // Disable the clicked button
+                                btn.disabled = true;
+
+                                // Show the spinner by removing the 'hidden' class
+                                const spinner = btn.querySelector('svg');
+                                if (spinner) {
+                                    spinner.classList.remove('hidden');
+                                }
+
+                                const span = btn.querySelector('span');
+                                if (span) {
+                                    span.style.display = 'none';
+                                }
+                            }
+                        });
+                    });
+                });
+            }
+
+            // Attach listeners immediately
+            attachButtonListeners();
+
+            // Try to attach Livewire listeners if available
+            function tryLivewireListeners() {
+                if (window.Livewire) {
+                    console.log('Livewire is now available');
+                    
+                    Livewire.on('loadingCompleted', () => {
+                        console.log('Loading completed event received');
+                        if (typeof isLoading !== 'undefined') {
+                            isLoading = false;
+                        }
+                    });
+
+                    Livewire.hook('morph.updated', ({ component, el }) => {
+                        console.log('Livewire morph updated, re-attaching listeners');
+                        attachButtonListeners();
+                    });
+                } else {
+                    console.log('Livewire still not available, retrying...');
+                    setTimeout(tryLivewireListeners, 500);
+                }
+            }
+
+            // Try Livewire listeners after a delay
+            setTimeout(tryLivewireListeners, 1000);
         });
     </script>
-    @endscript
 </div>

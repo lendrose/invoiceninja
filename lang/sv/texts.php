@@ -1399,7 +1399,7 @@ När ni har pengarna, kom tillbaka till denna betalningsmetods sida och klicka p
     'payment_type_Diners Card' => 'Diners kort',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Annat kreditkort',
+    'payment_type_Credit Card' => 'Annat kreditkort',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Check',

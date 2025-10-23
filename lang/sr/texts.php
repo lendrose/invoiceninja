@@ -1399,7 +1399,7 @@ Kada budete imali iznose, vratite se na ovu stranicu sa načinima plaćanja i k
     'payment_type_Diners Card' => 'Diners Card kartica',
     'payment_type_EuroCard' => 'EuroCard kartica',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Kreditna kartica Ostalo',
+    'payment_type_Credit Card' => 'Kreditna kartica Ostalo',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Ček',

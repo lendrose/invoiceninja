@@ -1396,7 +1396,7 @@ Quando tiver os valores dos depósitos, volte a esta página e conclua a verific
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Outro Cartão de Crédito',
+    'payment_type_Credit Card' => 'Outro Cartão de Crédito',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Cheque',

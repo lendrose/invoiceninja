@@ -45,7 +45,7 @@ class PaymentType extends StaticModel
     public const DINERS = 9;
     public const EUROCARD = 10;
     public const NOVA = 11;
-    public const CREDIT_CARD_OTHER = 12;
+    public const CREDIT_CARD = 12;
     public const PAYPAL = 13;
     public const CHECK = 15;
     public const CARTE_BLANCHE = 16;
@@ -96,7 +96,7 @@ class PaymentType extends StaticModel
         self::DINERS => 'payment_type_Diners Card',
         self::EUROCARD => 'payment_type_EuroCard',
         self::NOVA => 'payment_type_Nova',
-        self::CREDIT_CARD_OTHER => 'payment_type_Credit Card Other',
+        self::CREDIT_CARD => 'payment_type_Credit Card',
         self::PAYPAL => 'payment_type_PayPal',
         self::CHECK => 'payment_type_Check',
         self::CARTE_BLANCHE => 'payment_type_Carte Blanche',

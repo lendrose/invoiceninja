@@ -1400,7 +1400,7 @@ Sobald Sie die Beträge erhalten haben, kommen Sie bitte wieder zurück zu diese
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Kreditkarte (andere)',
+    'payment_type_Credit Card' => 'Kreditkarte (andere)',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Scheck',

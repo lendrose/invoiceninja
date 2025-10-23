@@ -1399,7 +1399,7 @@ Kun saat summat, palaa tälle maksutapasivulle ja klikkaa "Saata loppuun todenta
     'payment_type_Diners Card' => 'Diners kortti',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Muu luottokortti',
+    'payment_type_Credit Card' => 'Muu luottokortti',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Check',

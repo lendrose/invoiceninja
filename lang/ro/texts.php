@@ -1399,7 +1399,7 @@ Odată ce sumele au ajuns la dumneavoastră, reveniți la pagina cu metode de pl
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Alt card de credit',
+    'payment_type_Credit Card' => 'Alt card de credit',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Marcați',

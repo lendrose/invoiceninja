@@ -64,7 +64,7 @@ class PaymentTypesSeeder extends Seeder
             ['name' => 'Diners Card', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT_CARD],
             ['name' => 'EuroCard', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT_CARD],
             ['name' => 'Nova', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT_CARD],
-            ['name' => 'Credit Card Other', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT_CARD],
+            ['name' => 'Credit Card', 'gateway_type_id' => self::GATEWAY_TYPE_CREDIT_CARD],
             ['name' => 'PayPal', 'gateway_type_id' => self::GATEWAY_TYPE_PAYPAL],
             ['name' => 'Google Wallet'],
             ['name' => 'Check'],

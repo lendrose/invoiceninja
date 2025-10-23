@@ -1396,7 +1396,7 @@ Lorsque les montant apparaîtront sur votre relevé, veuillez revenir sur cette 
     'payment_type_Diners Card' => 'Diners Club',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Autre carte de crédit',
+    'payment_type_Credit Card' => 'Autre carte de crédit',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Chèque',

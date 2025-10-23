@@ -1400,7 +1400,7 @@ Ko imate zneske, se vrnite na to stran plačilnega sredstva in kliknite na "Comp
     'payment_type_Diners Card' => 'Diners kartica',
     'payment_type_EuroCard' => 'Euro kartica',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Ostale kreditne kartice',
+    'payment_type_Credit Card' => 'Ostale kreditne kartice',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google denarnica',
     'payment_type_Check' => 'Check',

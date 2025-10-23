@@ -1400,7 +1400,7 @@ Pasi të keni pranuar shumat, kthehuni në faqen e metodave të pagesës dhe kli
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Tjetër Credit Card',
+    'payment_type_Credit Card' => 'Tjetër Credit Card',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Qeqe',

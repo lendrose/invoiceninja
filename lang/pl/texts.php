@@ -1397,7 +1397,7 @@ Gdy przelewy zostaną zaksięgowane na Twoim koncie, wróć do tej strony i klik
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Inna karta kredytowa',
+    'payment_type_Credit Card' => 'Inna karta kredytowa',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Czek',

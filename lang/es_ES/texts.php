@@ -1395,7 +1395,7 @@ Una vez que tenga los montos, vuelva a esta página de métodos de pago y haga c
     'payment_type_Diners Card' => 'Tarjeta Diners',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Otras tarjetas de crédito',
+    'payment_type_Credit Card' => 'Otras tarjetas de crédito',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Cheque',

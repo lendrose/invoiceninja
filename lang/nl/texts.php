@@ -1396,7 +1396,7 @@ Kom terug naar deze betaalmethode pagina zodra u de bedragen heeft ontvangen en 
     'payment_type_Diners Card' => 'Diners Card',
     'payment_type_EuroCard' => 'EuroCard',
     'payment_type_Nova' => 'Nova',
-    'payment_type_Credit Card Other' => 'Andere creditcard',
+    'payment_type_Credit Card' => 'Andere creditcard',
     'payment_type_PayPal' => 'PayPal',
     'payment_type_Google Wallet' => 'Google Wallet',
     'payment_type_Check' => 'Cheque',

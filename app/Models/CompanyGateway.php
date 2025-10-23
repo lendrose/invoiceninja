@@ -391,28 +391,8 @@ class CompanyGateway extends BaseModel
      */
     public function calcGatewayFeeLabel($amount, Client $client, $gateway_type_id = GatewayType::CREDIT_CARD): string
     {
-        $label = ' ';
-
-        $fee = $this->calcGatewayFee($amount, $gateway_type_id);
-
-        if ($fee > 0) {
-            $fees_and_limits = $this->fees_and_limits->{$gateway_type_id};
-
-            if (isset($fees_and_limits->fee_percent) && $fees_and_limits->fee_percent > 0) {
-                $label .= $fees_and_limits->fee_percent . '%';
-            }
-
-            if (isset($fees_and_limits->fee_amount) && $fees_and_limits->fee_amount > 0) {
-                if (strlen($label) > 1) {
-                    $label .= ' + ' . Number::formatMoney($fees_and_limits->fee_amount, $client);
-                } else {
-                    $label .= Number::formatMoney($fees_and_limits->fee_amount, $client);
-                }
-            }
-        }
-
-
-        return $label;
+        // Return empty string to remove fee percentage from payment method labels
+        return '';
     }
 
     public function calcGatewayFee($amount, $gateway_type_id, $include_taxes = false)

@@ -640,9 +640,233 @@ class CompanyGatewayController extends BaseController
 
     public function test(TestCompanyGatewayRequest $request, CompanyGateway $company_gateway)
     {
-        $message = $company_gateway->driver()->auth();
-        return response()->json(['message' => $message], 200);
+        try {
+            // Enhanced initial logging
+            \Log::info('=== GATEWAY TEST STARTED ===', [
+                'gateway_id' => $company_gateway->id,
+                'gateway_key' => $company_gateway->gateway_key,
+                'gateway_label' => $company_gateway->label,
+                'user_id' => auth()->user()->id,
+                'user_email' => auth()->user()->email,
+                'timestamp' => now()->toISOString()
+            ]);
+            
+            // Check gateway relationship
+            $gateway = $company_gateway->gateway;
+            if (!$gateway) {
+                \Log::error('GATEWAY RELATIONSHIP MISSING', [
+                    'company_gateway_id' => $company_gateway->id,
+                    'gateway_key' => $company_gateway->gateway_key,
+                    'error' => 'Gateway record not found in database'
+                ]);
+                
+                return response()->json([
+                    'message' => 'Gateway configuration not found',
+                    'error' => 'GATEWAY_NOT_FOUND',
+                    'details' => 'The gateway record does not exist in the database'
+                ], 400);
+            }
+            
+            \Log::info('Gateway relationship found', [
+                'gateway_id' => $gateway->id,
+                'gateway_name' => $gateway->name,
+                'gateway_provider' => $gateway->provider,
+                'gateway_visible' => $gateway->visible,
+                'gateway_sort_order' => $gateway->sort_order
+            ]);
+            
+            // Check driver class
+            $expectedClass = 'App\\PaymentDrivers\\' . $gateway->provider . 'PaymentDriver';
+            $expectedClass = str_replace('_', '', $expectedClass);
+            
+            \Log::info('Driver class analysis', [
+                'expected_class' => $expectedClass,
+                'class_exists' => class_exists($expectedClass),
+                'provider' => $gateway->provider
+            ]);
+            
+            if (!class_exists($expectedClass)) {
+                \Log::error('DRIVER CLASS NOT FOUND', [
+                    'expected_class' => $expectedClass,
+                    'provider' => $gateway->provider,
+                    'available_drivers' => $this->getAvailablePaymentDrivers()
+                ]);
+                
+                return response()->json([
+                    'message' => 'Payment driver not found for this gateway type',
+                    'error' => 'DRIVER_NOT_FOUND',
+                    'details' => 'The payment driver class does not exist for provider: ' . $gateway->provider,
+                    'expected_class' => $expectedClass
+                ], 400);
+            }
+            
+            // Get driver instance
+            $driver = $company_gateway->driver();
+            
+            if (!$driver) {
+                $errorInfo = $company_gateway->getDriverErrorInfo();
+                
+                \Log::error('DRIVER CREATION FAILED', [
+                    'gateway_id' => $company_gateway->id,
+                    'gateway_key' => $company_gateway->gateway_key,
+                    'provider' => $gateway->provider,
+                    'expected_class' => $expectedClass,
+                    'error_info' => $errorInfo
+                ]);
+                
+                return response()->json([
+                    'message' => 'Payment driver creation failed',
+                    'error' => 'DRIVER_CREATION_FAILED',
+                    'details' => 'Failed to create payment driver instance',
+                    'debug_info' => $errorInfo
+                ], 400);
+            }
+            
+            \Log::info('Driver created successfully', [
+                'driver_class' => get_class($driver),
+                'gateway_id' => $company_gateway->id
+            ]);
+            
+            // Log gateway configuration (masked for security)
+            $config = $company_gateway->getConfig();
+            $maskedConfig = $this->maskSensitiveConfig($config);
+            
+            \Log::info('Gateway configuration', [
+                'gateway_id' => $company_gateway->id,
+                'config_fields' => array_keys((array) $config),
+                'masked_config' => $maskedConfig,
+                'has_api_login_id' => !empty($config->apiLoginId ?? null),
+                'has_transaction_key' => !empty($config->transactionKey ?? null),
+                'has_signature_key' => !empty($config->signatureKey ?? null),
+                'test_mode' => $config->testMode ?? null,
+                'developer_mode' => $config->developerMode ?? null
+            ]);
+            
+            // Test authentication
+            \Log::info('Starting gateway authentication test', [
+                'gateway_id' => $company_gateway->id,
+                'driver_class' => get_class($driver)
+            ]);
+            
+            $message = $driver->auth();
+            
+            \Log::info('Gateway authentication completed', [
+                'gateway_id' => $company_gateway->id,
+                'auth_result' => $message,
+                'auth_success' => $message === 'ok',
+                'timestamp' => now()->toISOString()
+            ]);
+            
+            if ($message !== 'ok') {
+                \Log::warning('Gateway authentication failed', [
+                    'gateway_id' => $company_gateway->id,
+                    'gateway_provider' => $gateway->provider,
+                    'auth_result' => $message,
+                    'possible_causes' => [
+                        'Invalid API credentials (apiLoginId, transactionKey)',
+                        'Missing signatureKey (required for newer Authorize.net)',
+                        'Network connectivity issues',
+                        'Wrong test/live mode configuration',
+                        'API endpoint configuration issues'
+                    ]
+                ]);
+            }
+            
+            return response()->json([
+                'message' => $message,
+                'status' => $message === 'ok' ? 'success' : 'error',
+                'gateway_id' => $company_gateway->id,
+                'gateway_key' => $company_gateway->gateway_key,
+                'gateway_provider' => $gateway->provider
+            ], 200);
+            
+        } catch (\App\Exceptions\GenericPaymentDriverFailure $e) {
+            \Log::error('Gateway authentication failed with payment driver error', [
+                'gateway_id' => $company_gateway->id,
+                'error' => $e->getMessage(),
+                'gateway_key' => $company_gateway->gateway_key
+            ]);
+            
+            return response()->json([
+                'message' => 'Gateway authentication failed: ' . $e->getMessage(),
+                'error' => 'PAYMENT_DRIVER_ERROR',
+                'details' => $e->getMessage(),
+                'gateway_id' => $company_gateway->id
+            ], 400);
+            
+        } catch (\Exception $e) {
+            \Log::error('Gateway test failed with exception', [
+                'gateway_id' => $company_gateway->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'gateway_key' => $company_gateway->gateway_key
+            ]);
+            
+            return response()->json([
+                'message' => 'Gateway authentication failed: ' . $e->getMessage(),
+                'error' => 'AUTH_FAILED',
+                'details' => $e->getMessage(),
+                'gateway_id' => $company_gateway->id
+            ], 400);
+            
+        } catch (\Throwable $e) {
+            \Log::error('Gateway test failed with fatal error', [
+                'gateway_id' => $company_gateway->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'gateway_key' => $company_gateway->gateway_key
+            ]);
+            
+            return response()->json([
+                'message' => 'Unexpected error during gateway test',
+                'error' => 'UNEXPECTED_ERROR',
+                'details' => $e->getMessage(),
+                'gateway_id' => $company_gateway->id
+            ], 500);
+        }
+    }
 
+    /**
+     * Get list of available payment drivers for debugging
+     */
+    private function getAvailablePaymentDrivers()
+    {
+        $paymentDriverPath = app_path('PaymentDrivers/');
+        $files = glob($paymentDriverPath . '*PaymentDriver.php');
+        
+        $drivers = [];
+        foreach ($files as $file) {
+            $className = basename($file, '.php');
+            $drivers[] = $className;
+        }
+        
+        return $drivers;
+    }
+
+    /**
+     * Mask sensitive configuration values for logging
+     */
+    private function maskSensitiveConfig($config)
+    {
+        $masked = [];
+        $sensitiveFields = ['apiLoginId', 'transactionKey', 'signatureKey', 'apiKey', 'secretKey', 'password'];
+        
+        // Convert stdClass to array if needed
+        $configArray = (array) $config;
+        
+        foreach ($configArray as $key => $value) {
+            if (in_array($key, $sensitiveFields)) {
+                if (is_string($value) && strlen($value) > 0) {
+                    $masked[$key] = strlen($value) > 4 ? substr($value, 0, 4) . '...' : '***';
+                } else {
+                    $masked[$key] = empty($value) ? 'Not Set' : 'Set';
+                }
+            } else {
+                $masked[$key] = $value;
+            }
+        }
+        
+        return $masked;
     }
 
     public function importCustomers(TestCompanyGatewayRequest $request, CompanyGateway $company_gateway)

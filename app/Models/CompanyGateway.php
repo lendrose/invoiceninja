@@ -230,6 +230,24 @@ class CompanyGateway extends BaseModel
     }
 
     /**
+     * Get detailed error information when driver fails to load
+     */
+    public function getDriverErrorInfo()
+    {
+        $provider = $this->gateway->provider ?? 'unknown';
+        $expectedClass = 'App\\PaymentDrivers\\'.$provider.'PaymentDriver';
+        $expectedClass = str_replace('_', '', $expectedClass);
+        
+        return [
+            'provider' => $provider,
+            'expected_class' => $expectedClass,
+            'class_exists' => class_exists($expectedClass),
+            'gateway_key' => $this->gateway_key,
+            'gateway_id' => $this->id
+        ];
+    }
+
+    /**
      * @param $config
      */
     public function setConfig($config)

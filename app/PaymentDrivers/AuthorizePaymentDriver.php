@@ -161,13 +161,48 @@ class AuthorizePaymentDriver extends BaseDriver
 
     public function getPublicClientKey()
     {
-        $request = new GetMerchantDetailsRequest();
-        $request->setMerchantAuthentication($this->merchant_authentication);
+        try {
+            \Log::info('Authorize.net API call started: GetMerchantDetails', [
+                'gateway_id' => $this->company_gateway->id,
+                'mode' => $this->mode(),
+                'api_login_id' => $this->merchant_authentication->getName(),
+                'transaction_key_length' => strlen($this->merchant_authentication->getTransactionKey())
+            ]);
+            
+            $request = new GetMerchantDetailsRequest();
+            $request->setMerchantAuthentication($this->merchant_authentication);
 
-        $controller = new GetMerchantDetailsController($request);
-        $response = $controller->executeWithApiResponse($this->mode());
-
-        return $response->getPublicClientKey();
+            $controller = new GetMerchantDetailsController($request);
+            $response = $controller->executeWithApiResponse($this->mode());
+            
+            if ($response) {
+                $publicClientKey = $response->getPublicClientKey();
+                
+                \Log::info('Authorize.net API call successful', [
+                    'gateway_id' => $this->company_gateway->id,
+                    'has_public_client_key' => !empty($publicClientKey),
+                    'public_client_key_length' => $publicClientKey ? strlen($publicClientKey) : 0
+                ]);
+                
+                return $publicClientKey;
+            } else {
+                \Log::error('Authorize.net API call failed: No response received', [
+                    'gateway_id' => $this->company_gateway->id,
+                    'mode' => $this->mode()
+                ]);
+                return null;
+            }
+            
+        } catch (\Exception $e) {
+            \Log::error('Authorize.net API call exception', [
+                'gateway_id' => $this->company_gateway->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'mode' => $this->mode()
+            ]);
+            return null;
+        }
     }
 
     public function mode()
@@ -218,7 +253,80 @@ class AuthorizePaymentDriver extends BaseDriver
 
     public function auth(): string
     {
-        return $this->init()->getPublicClientKey() ? 'ok' : 'error';
+        try {
+            \Log::info('Authorize.net authentication started', [
+                'gateway_id' => $this->company_gateway->id,
+                'gateway_key' => $this->company_gateway->gateway_key
+            ]);
+            
+            // Initialize the driver
+            $this->init();
+            
+            \Log::info('Authorize.net driver initialized', [
+                'gateway_id' => $this->company_gateway->id,
+                'has_api_login_id' => !empty($this->company_gateway->getConfigField('apiLoginId')),
+                'has_transaction_key' => !empty($this->company_gateway->getConfigField('transactionKey')),
+                'has_signature_key' => !empty($this->company_gateway->getConfigField('signatureKey')),
+                'test_mode' => $this->company_gateway->getConfigField('testMode'),
+                'developer_mode' => $this->company_gateway->getConfigField('developerMode')
+            ]);
+            
+            // Check if required credentials are present
+            $apiLoginId = $this->company_gateway->getConfigField('apiLoginId');
+            $transactionKey = $this->company_gateway->getConfigField('transactionKey');
+            
+            if (empty($apiLoginId)) {
+                \Log::error('Authorize.net authentication failed: Missing API Login ID', [
+                    'gateway_id' => $this->company_gateway->id
+                ]);
+                return 'error';
+            }
+            
+            if (empty($transactionKey)) {
+                \Log::error('Authorize.net authentication failed: Missing Transaction Key', [
+                    'gateway_id' => $this->company_gateway->id
+                ]);
+                return 'error';
+            }
+            
+            \Log::info('Authorize.net credentials validated, attempting API call', [
+                'gateway_id' => $this->company_gateway->id,
+                'api_login_id_length' => strlen($apiLoginId),
+                'transaction_key_length' => strlen($transactionKey)
+            ]);
+            
+            // Attempt to get public client key (this makes the actual API call)
+            $publicClientKey = $this->getPublicClientKey();
+            
+            if ($publicClientKey) {
+                \Log::info('Authorize.net authentication successful', [
+                    'gateway_id' => $this->company_gateway->id,
+                    'public_client_key_length' => strlen($publicClientKey)
+                ]);
+                return 'ok';
+            } else {
+                \Log::error('Authorize.net authentication failed: getPublicClientKey returned null', [
+                    'gateway_id' => $this->company_gateway->id,
+                    'possible_causes' => [
+                        'Invalid API credentials',
+                        'Network connectivity issues',
+                        'Authorize.net API endpoint issues',
+                        'Account not properly configured'
+                    ]
+                ]);
+                return 'error';
+            }
+            
+        } catch (\Exception $e) {
+            \Log::error('Authorize.net authentication exception', [
+                'gateway_id' => $this->company_gateway->id,
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return 'error';
+        }
     }
     
     /**

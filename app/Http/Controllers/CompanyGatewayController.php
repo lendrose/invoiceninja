@@ -775,9 +775,16 @@ class CompanyGatewayController extends BaseController
             return response()->json([
                 'message' => $message,
                 'status' => $message === 'ok' ? 'success' : 'error',
-                'gateway_id' => $company_gateway->id,
-                'gateway_key' => $company_gateway->gateway_key,
-                'gateway_provider' => $gateway->provider
+                'gateway_provider' => $gateway->provider,
+                'debug_info' => [
+                    'auth_result' => $message,
+                    'auth_success' => $message === 'ok',
+                    'config_has_api_login_id' => !empty($company_gateway->getConfig()->apiLoginId ?? null),
+                    'config_has_transaction_key' => !empty($company_gateway->getConfig()->transactionKey ?? null),
+                    'config_has_signature_key' => !empty($company_gateway->getConfig()->signatureKey ?? null),
+                    'config_test_mode' => $company_gateway->getConfig()->testMode ?? null,
+                    'config_developer_mode' => $company_gateway->getConfig()->developerMode ?? null
+                ]
             ], 200);
             
         } catch (\App\Exceptions\GenericPaymentDriverFailure $e) {
@@ -790,8 +797,7 @@ class CompanyGatewayController extends BaseController
             return response()->json([
                 'message' => 'Gateway authentication failed: ' . $e->getMessage(),
                 'error' => 'PAYMENT_DRIVER_ERROR',
-                'details' => $e->getMessage(),
-                'gateway_id' => $company_gateway->id
+                'details' => $e->getMessage()
             ], 400);
             
         } catch (\Exception $e) {
@@ -805,8 +811,7 @@ class CompanyGatewayController extends BaseController
             return response()->json([
                 'message' => 'Gateway authentication failed: ' . $e->getMessage(),
                 'error' => 'AUTH_FAILED',
-                'details' => $e->getMessage(),
-                'gateway_id' => $company_gateway->id
+                'details' => $e->getMessage()
             ], 400);
             
         } catch (\Throwable $e) {
@@ -820,8 +825,7 @@ class CompanyGatewayController extends BaseController
             return response()->json([
                 'message' => 'Unexpected error during gateway test',
                 'error' => 'UNEXPECTED_ERROR',
-                'details' => $e->getMessage(),
-                'gateway_id' => $company_gateway->id
+                'details' => $e->getMessage()
             ], 500);
         }
     }

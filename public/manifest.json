@@ -1,20 +1,20 @@
 {
-    "name": "Invoice Ninja",
-    "short_name": "Invoice Ninja",
+    "name": "LendrosePay",
+    "short_name": "LendrosePay",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "Invoice Clients, Track Work-Time, Get Paid Online.",
+    "description": "LendrosePay is a platform for sending and receiving payments, with integrated financing.",
     "orientation": "portrait-primary",
     "prefer_related_applications": true,
     "related_applications": [
         {
             "platform": "play",
-            "id": "com.invoiceninja.app"
+            "id": "com.lendrosepay.app"
         }, {
             "platform": "itunes",
-            "url": "https://testflight.apple.com/join/MJ6WpaXh"
+            "url": "https://apps.apple.com/app/id6761513833"
         }
     ],
     "icons": [

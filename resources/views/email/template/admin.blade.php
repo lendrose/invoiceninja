@@ -153,7 +153,7 @@
                         <div class="dark-bg"
                              style="background-color:#f9f9f9; padding-bottom: 20px; margin-top:20px;">
                             @if($logo && strpos($logo, 'blank.png') === false)
-                            <img class="" src="{{ $logo ?? '' }}" alt=" " border="0" style="display: block; width: auto; max-width: 300px; max-height: 100px; height: auto; margin: 0 auto;" class="g-img">
+                            <img class="" src="{{ $logo ?? '' }}" alt=" " border="0" style="display: block; width: auto; max-width: 200px; max-height: 100px; height: auto; margin: 0 auto;" class="g-img">
                             @endif
                         </div>
                     </td>
@@ -248,7 +248,7 @@
                         style="background-color: #242424;">
                         <div style="padding-top: 10px;padding-bottom: 10px;">
                             <p style="text-align: center; color: #ffffff; font-size: 10px;
-                            font-family: Verdana, Geneva, Tahoma, sans-serif;">© {{ date('Y') }} Invoice Ninja, All Rights Reserved
+                            font-family: Verdana, Geneva, Tahoma, sans-serif;">© {{ date('Y') }} LendrosePay, All Rights Reserved
                             </p>
 
                             <!-- <a href="{{ $email_preferences }}">

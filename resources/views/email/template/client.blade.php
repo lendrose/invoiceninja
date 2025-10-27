@@ -158,7 +158,7 @@
                     <td align="center" cellpadding="20">
                         <div style="border: 1px solid #c2c2c2; border-bottom: none; padding-bottom: 10px; border-top-left-radius: 3px; border-top-right-radius: 3px; padding-top:10px;">
                             @if($logo && strpos($logo, 'blank.png') === false)
-                             <img class="" src="{{ $logo ?? '' }}" alt=" " border="0" style="display: block; width: auto; max-width: 300px; max-height: 100px; height: auto; margin: 0 auto;">
+                             <img class="" src="{{ $logo ?? '' }}" alt=" " border="0" style="display: block; width: auto; max-width: 200px; max-height: 100px; height: auto; margin: 0 auto;">
                             @endif
                         </div>
                     </td>
@@ -231,12 +231,12 @@
                             font-family: Verdana, Geneva, Tahoma, sans-serif;">© {{ date('Y') }} {{ $company->present()->name() }}, All Rights Reserved</p>
                                 @else
                                     <p style="text-align: center; color: #ffffff; font-size: 10px; font-family: Verdana, Geneva, Tahoma, sans-serif;">
-                                        © {{ date('Y') }} Invoice Ninja, All Rights Reserved
+                                        © {{ date('Y') }} LendrosePay, All Rights Reserved
                                     </p>
                                 @endif
                             @else
                                 <p style="text-align: center; color: #ffffff; font-size: 10px; font-family: Verdana, Geneva, Tahoma, sans-serif;">
-                                    © {{ date('Y') }} Invoice Ninja, All Rights Reserved
+                                    © {{ date('Y') }} LendrosePay, All Rights Reserved
                                 </p>
                             @endif
                         </div>

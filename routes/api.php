@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SNSController;
 use App\Http\Controllers\BaseController;
 use App\Http\Controllers\PingController;
+use App\Http\Controllers\SessionVerificationController;
 use App\Http\Controllers\SmtpController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\UserController;
@@ -140,6 +141,11 @@ Route::group(['middleware' => ['throttle:login', 'api_secret_check', 'email_db']
     Route::post('api/v1/login', [LoginController::class, 'apiLogin'])->name('login.submit');
     Route::post('api/v1/reset_password', [ForgotPasswordController::class, 'sendResetLinkEmail']);
 });
+
+// Session verification endpoint for v1.1 API integration
+Route::post('api/v1/verify-session', [SessionVerificationController::class, 'verify'])
+    ->middleware(['web', 'throttle:60,1'])
+    ->name('api.verify_session');
 
 Route::group(['middleware' => ['throttle:api', 'token_auth', 'valid_json','locale'], 'prefix' => 'api/v1', 'as' => 'api.'], function () {
 

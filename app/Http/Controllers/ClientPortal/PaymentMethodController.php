@@ -52,7 +52,16 @@ class PaymentMethodController extends Controller
      */
     public function create(CreatePaymentMethodRequest $request)
     {
-        $gateway = $this->getClientGateway();
+        // Store method in session if provided, so it persists through redirects
+        $method = $request->query('method');
+        if ($method !== null) {
+            session(['payment_method_create_method' => $method]);
+        } else {
+            // Fallback to session if method not in query params (e.g., after redirect)
+            $method = session('payment_method_create_method');
+        }
+
+        $gateway = $this->getClientGateway($method);
 
         $data['gateway'] = $gateway;
 
@@ -62,7 +71,7 @@ class PaymentMethodController extends Controller
 
         return $gateway
             ->driver($client_contact->client)
-            ->setPaymentMethod($request->query('method'))
+            ->setPaymentMethod($method)
             ->checkRequirements()
             ->authorizeView($data);
     }
@@ -168,19 +177,22 @@ class PaymentMethodController extends Controller
             ->withSuccess(ctrans('texts.payment_method_removed'));
     }
 
-    private function getClientGateway()
+    private function getClientGateway($method = null)
     {
         /** @var \App\Models\ClientContact auth()->guard('contact')->user() **/
         $client_contact = auth()->guard('contact')->user();
 
-        if ((string)request()->query('method') === (string)GatewayType::CREDIT_CARD) {
+        // Use provided method, or get from query params, or get from session
+        $method = $method ?? request()->query('method') ?? session('payment_method_create_method');
+
+        if ((string)$method === (string)GatewayType::CREDIT_CARD) {
             return $client_contact->client->getCreditCardGateway();
         }
-        if ((string)request()->query('method') === (string)GatewayType::BACS) {
+        if ((string)$method === (string)GatewayType::BACS) {
             return $client_contact->client->getBACSGateway();
         }
 
-        if (in_array(request()->query('method'), [GatewayType::BANK_TRANSFER, GatewayType::DIRECT_DEBIT, GatewayType::SEPA, GatewayType::ACSS])) {
+        if (in_array($method, [GatewayType::BANK_TRANSFER, GatewayType::DIRECT_DEBIT, GatewayType::SEPA, GatewayType::ACSS])) {
             return $client_contact->client->getBankTransferGateway(true); //Required to allow rotessa to be used when adding a payment method.
         }
 

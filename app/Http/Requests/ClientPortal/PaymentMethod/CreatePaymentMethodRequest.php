@@ -26,11 +26,18 @@ class CreatePaymentMethodRequest extends FormRequest
         /** @var Client $client */
         $client = auth()->guard('contact')->user()->client;
 
+        // Check query params first, then fall back to session (for redirects that lose the method param)
+        $method = $this->query('method') ?? session('payment_method_create_method');
+
+        if ($method === null) {
+            return false;
+        }
+
         $available_methods = collect($client->service()->getPaymentMethods(-1))
             ->pluck('gateway_type_id')
             ->toArray();
 
-        return in_array($this->query('method'), $available_methods);
+        return in_array($method, $available_methods);
 
     }
 

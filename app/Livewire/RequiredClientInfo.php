@@ -185,9 +185,14 @@ class RequiredClientInfo extends Component
 
     public bool $is_subscription = false;
 
+    public $payment_method_param; // Store the method parameter to preserve it
+
     public function mount()
     {
         MultiDB::setDb($this->db);
+
+        // Capture and preserve the method parameter from the URL
+        $this->payment_method_param = request()->query('method');
 
         $contact = ClientContact::withTrashed()->with(['client' => function ($query) {
             $query->without('gateway_tokens', 'documents', 'contacts.company', 'contacts'); // Exclude 'grandchildren' relation of 'client'

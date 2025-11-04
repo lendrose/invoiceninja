@@ -33,11 +33,15 @@ class CreatePaymentMethodRequest extends FormRequest
             return false;
         }
 
+        // Convert method to integer for comparison (query params come as strings)
+        $method = (int) $method;
+
         $available_methods = collect($client->service()->getPaymentMethods(-1))
             ->pluck('gateway_type_id')
+            ->map(fn($id) => (int) $id) // Ensure all are integers
             ->toArray();
 
-        return in_array($method, $available_methods);
+        return in_array($method, $available_methods, true); // Strict comparison
 
     }
 

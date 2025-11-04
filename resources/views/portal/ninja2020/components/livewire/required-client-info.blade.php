@@ -13,6 +13,10 @@
         @endunless  
 
         <form id="required-client-info-form" x-on:submit.prevent="$wire.handleSubmit(Object.fromEntries(new FormData(document.getElementById('required-client-info-form'))))">
+            {{-- Preserve the method parameter through form submissions --}}
+            @if(request()->query('method'))
+                <input type="hidden" name="method" value="{{ request()->query('method') }}" wire:model="payment_method_param">
+            @endif
             @foreach($fields as $field)
                 @if(!array_key_exists('filled', $field))
                     @component('portal.ninja2020.components.general.card-element', ['title' => $field['label']])

@@ -165,8 +165,6 @@ class AuthorizePaymentDriver extends BaseDriver
             \Log::info('Authorize.net API call started: GetMerchantDetails', [
                 'gateway_id' => $this->company_gateway->id,
                 'mode' => $this->mode(),
-                'api_login_id' => $this->merchant_authentication->getName(),
-                'transaction_key_length' => strlen($this->merchant_authentication->getTransactionKey())
             ]);
             
             $request = new GetMerchantDetailsRequest();
